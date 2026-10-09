@@ -3,16 +3,18 @@
 <style>html{--sans:"Noto Sans JP","Geist","Segoe UI",system-ui,-apple-system,sans-serif}
 .showcase-feature{margin:26px 0}
 .showcase-feature .flag-card{margin:0}
-.then-now{margin:38px 0;padding:30px clamp(18px,3vw,36px);background:#FFF8EE;border:2px solid #E9A319;border-radius:22px}
-.tn-head{display:flex;align-items:center;gap:16px;margin-bottom:22px}
-.tn-year{font-size:clamp(30px,4.5vw,52px);font-weight:800;letter-spacing:-.02em;color:#24130C;line-height:1}
-.tn-line{flex:1;height:3px;background:linear-gradient(90deg,#E9A319,#D85A20);border-radius:2px}
-.tn-bridge{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#8A5A00;white-space:nowrap}
-.tn-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,2.5vw,28px)}
-@media(max-width:760px){.tn-grid{grid-template-columns:1fr}}
-.tn-grid .flag-card{margin:0}
-.tn-cap{margin:20px 0 0;font-size:15.5px;color:#5A4A3A;max-width:640px}
-.tn-cap a{color:#0E6B5C;font-weight:600}</style>
+
+.showcase-box{margin:38px 0;padding:clamp(24px,3vw,40px);background:#FFF8EE;border:2px solid #E9A319;border-radius:22px}
+.sb-head{max-width:680px;margin-bottom:24px}
+.sb-head h3{font-size:clamp(22px,2.6vw,30px);margin:0 0 10px;letter-spacing:-.02em}
+.sb-head p{margin:0;font-size:16px;line-height:1.6;color:#5A4A3A}
+.trio-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:clamp(16px,2.5vw,28px)}
+@media(max-width:900px){.trio-grid{grid-template-columns:1fr;max-width:520px;margin:0 auto}}
+.flag-card-v{flex-direction:column}
+.flag-card-v video{aspect-ratio:16/9;width:100%}
+.flag-card-v .fc-body{padding:20px}
+.showcase-feature{margin:26px 0}
+.showcase-feature .flag-card{margin:0}</style>
 <link rel="stylesheet" href="https://studio.madebydavidmartin.com/styles.css"><style>body{margin:0}
 .flag-card{display:grid;grid-template-columns:minmax(240px,400px) 1fr;gap:28px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:0;overflow:hidden;color:var(--ink);margin:26px 0 4px}
 .flag-card video{width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:16/9;background:#000}
@@ -182,37 +184,37 @@ main section.cta-band-white .btn-primary{background:#1A120C;border-color:#1A120C
 <section class="sec band-white" id="selected-video">
   <div class="sec-head"><div><span class="eyebrow">選りすぐりの映像作品</span><h2>企画から納品まで、一貫してディレクション。</h2></div><p><a href="video.html">すべての映像 &rarr;</a></p></div>
   <p class="lede" style="max-width:700px">4本のフィルム。4つの異なる仕事。1人のディレクター。エンドツーエンドで演出した映像作品のセレクションです。6部作のサイバーセキュリティシリーズやDJCカタログを含む全アーカイブは、映像ページでご覧いただけます。</p>
-      <div class="showcase-feature">
+      <div class="showcase-box">
+    <div class="sb-head">
+      <h3>フラッグシップ・プロダクトフィルム。</h3>
+      <p>架空のロボットアームのための45秒AIディレクション・コンセプトフィルム。すべてのショット、セリフ、グラフィックは人間のディレクションのもとで生成・組み立てられました。</p>
+    </div>
+    <div class="showcase-feature">
     <div class="flag-card">
     <video controls playsinline preload="metadata" poster="https://studio.madebydavidmartin.com/video/orivex-poster.jpg" aria-label="ORIVEX ARC-7、AIディレクションによるプロダクトフィルム、45秒"><source src="https://studio.madebydavidmartin.com/video/orivex-arc7.mp4" type="video/mp4">お使いのブラウザは動画を再生できません。<a href="video/orivex-arc7.mp4">MP4をダウンロード</a>。</video>
     <div class="fc-body"><span class="pnote-num">フラッグシップ・AIディレクションによるプロダクトフィルム</span><h3>ORIVEX ARC-7</h3><p>45 seconds, 1080p. AIアシストによるパイプラインで制作したコンセプト・プロダクトフィルム。すべてのショット、セリフ、グラフィックは人間のディレクションのもとで生成・組み立てられました。<a href="orivex.html">制作事例を読む &rarr;</a></p></div>
   </div>
   </div>
-  <div class="then-now">
-    <div class="tn-head" aria-hidden="true">
-      <span class="tn-year">1976</span>
-      <span class="tn-line"></span>
-      <span class="tn-bridge">50年の時を隔てて</span>
-      <span class="tn-line"></span>
-      <span class="tn-year">2026</span>
+  </div>
+  <div class="showcase-box">
+    <div class="sb-head">
+      <h3>ひとつのブリーフ、3つの方向性。</h3>
+      <p>同じ30秒のコーラCMブリーフを3つの形で。1976年のオリジナル、2026年のリメイク、そして別名義のファンキーな再解釈Fizola。世代、テーマ、ジャンル。ディレクターは同じ。</p>
     </div>
-    <div class="tn-grid">
-      <div class="flag-card">
+    <div class="trio-grid">
+      <div class="flag-card flag-card-v">
     <video controls playsinline preload="metadata" poster="https://studio.madebydavidmartin.com/video/fizzypop-poster.jpg" aria-label="Fizzy Pop Cherry Cola、1976年オリジナル、30秒のスペックCM"><source src="https://studio.madebydavidmartin.com/video/fizzypop.mp4" type="video/mp4">お使いのブラウザは動画を再生できません。<a href="video/fizzypop.mp4">MP4をダウンロード</a>。</video>
     <div class="fc-body"><span class="pnote-num">フラッグシップ・AIディレクションによるスペックCM</span><h3>Fizzy Pop! 1976</h3><p>30秒、1080p。オリジナル版。1970年代のチェリーコーラCM。エンドツーエンドでディレクションしました。<a href="fizzypop.html">1976年版と2026年版を見比べる &rarr;</a></p></div>
   </div>
-      <div class="flag-card">
+      <div class="flag-card flag-card-v">
     <video controls playsinline preload="metadata" poster="https://studio.madebydavidmartin.com/img/fizzypop-2026-poster.jpg" aria-label="Fizzy Pop Cherry Cola、2026年バージョン、30秒のスペックCM"><source src="https://studio.madebydavidmartin.com/video/fizzypop-2026.mp4" type="video/mp4">お使いのブラウザは動画を再生できません。<a href="video/fizzypop-2026.mp4">MP4をダウンロード</a>。</video>
     <div class="fc-body"><span class="pnote-num">フラッグシップ・AIディレクションによるスペックCM</span><h3>Fizzy Pop! 2026</h3><p>30秒、1080p。1976年の名作を50年の時を経てリメイク。同じブランド、新しい街、新しいエネルギー。エンドツーエンドでディレクションしました。<a href="fizzypop.html">1976年版と2026年版を見比べる &rarr;</a></p></div>
   </div>
-    </div>
-    <p class="tn-cap">同じブランド、50年の時を隔てて。1976年のオリジナルと2026年のリメイク。エンドツーエンドでディレクションしました。<a href="fizzypop.html">詳しい見比べはこちら &rarr;</a></p>
-  </div>
-  <div class="showcase-feature">
-    <div class="flag-card">
+      <div class="flag-card flag-card-v">
     <video controls playsinline preload="metadata" poster="https://studio.madebydavidmartin.com/video/fizola-poster.jpg" aria-label="Fizola Cola、30秒のスペックCM"><source src="https://studio.madebydavidmartin.com/video/Fizola.mp4" type="video/mp4">お使いのブラウザは動画を再生できません。<a href="video/Fizola.mp4">MP4をダウンロード</a>。</video>
     <div class="fc-body"><span class="pnote-num">フラッグシップ・AIディレクションによるスペックCM</span><h3>Fizola Cola</h3><p>30秒、1080p。1970年代風の架空コーラのスペックTVスポット。オリジナルソング付き。ブランド、世界観、音楽、編集まで、エンドツーエンドでディレクションしました。<a href="fizzypop.html">Fizzy Pop!との見比べ &rarr;</a></p></div>
   </div>
+    </div>
   </div>
   
   
