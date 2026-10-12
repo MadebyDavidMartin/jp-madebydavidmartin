@@ -68,6 +68,14 @@
 .flowline{margin:0 0 14px}
 
 /* ===== Dynamic Fizzy hero (Oct 2026) ===== */
+/* JP hero: warm abstract background, retire old layer (Oct 2026) */
+.cine{position:relative;isolation:isolate;--hero-photo-o:.8}
+.cine{background:#E7D6B4;box-shadow:0 0 0 100vmax #E7D6B4}
+main .cine::after{background-image:none}
+.cine::before{content:"";position:absolute;inset:0 -100vmax;z-index:0;pointer-events:none;opacity:0;animation:cineBgIn 1.8s ease .15s forwards;background:url("https://studio.madebydavidmartin.com/img/hero-studio-warm.jpg") center 38%/cover no-repeat}
+.cine-in{position:relative;z-index:1}
+@keyframes cineBgIn{from{opacity:0}to{opacity:var(--hero-photo-o,.8)}}
+@media (prefers-reduced-motion:reduce){.cine::before{animation:none;opacity:var(--hero-photo-o,.8)}}
 .cine-hero{display:grid;grid-template-columns:1.08fr .92fr;gap:clamp(20px,3.5vw,48px);align-items:center}
 .cine-copy{position:relative;z-index:2;min-width:0}
 .cine-hero .cine-title{font-size:clamp(44px,5.4vw,92px)}
