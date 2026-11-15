@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>flaminGO Mobile『Big-Carrier Bill』制作ガイド | David Martin</title>
+<meta name="description" content="flaminGO Mobile『Big-Carrier Bill』の完全な制作ガイドです。34.7秒のスペックCMで、演出は私が担当し、AIを用いて制作しました。コンセプト、リファレンス、ショット、ボイス、音楽、グラフィック、編集と納品物までを解説します。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Figtree:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>html{--sans:"Noto Sans JP","Geist","Segoe UI",system-ui,-apple-system,sans-serif}</style>
+<style>
+:root{--pink:#EC3D8C;--plum:#3B1431;--lpink:#F5A3C8;--blush:#FFF4F8;--line:#F3D3E0;--mut:#7A4A63;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:var(--blush);color:var(--plum);font:16.5px/1.65 "Figtree",system-ui,sans-serif}
+.wrap{max-width:880px;margin:0 auto;padding:0 clamp(18px,4vw,40px)}
+header.doc{padding:clamp(36px,6vw,64px) 0 8px}
+.wordmark{font-family:"Fredoka";font-weight:600;font-size:15px;letter-spacing:.34em;color:var(--pink);text-transform:uppercase}
+h1{font-family:"Fredoka";font-weight:600;font-size:clamp(32px,5vw,50px);line-height:1.08;margin:10px 0 8px}
+.sub{font-size:19px;color:var(--mut);margin:0 0 18px}
+.credit{font-size:15px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:12px 0;margin:0 0 8px}
+.specs{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 4px}
+.specs span{background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 13px;font-size:13.5px;font-weight:600}
+.specs b{color:var(--pink)}
+section{padding:clamp(22px,3.6vw,38px) 0 4px}
+.k{font-family:"Fredoka";font-weight:600;font-size:12.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--pink);margin:0 0 6px}
+h2{font-family:"Fredoka";font-weight:600;font-size:clamp(24px,3.4vw,32px);line-height:1.15;margin:0 0 12px}
+h3{font-family:"Fredoka";font-weight:600;font-size:19px;margin:22px 0 6px}
+p{margin:0 0 12px}
+ul,ol{margin:0 0 12px;padding-left:22px}
+li{margin-bottom:6px}
+table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:6px 0 16px;font-size:15px}
+th,td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--line)}
+th{font-family:"Fredoka";font-weight:600;background:#FFF9FB}
+tr:last-child td{border-bottom:none}
+.q{font-style:italic}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:0 0 14px}
+.sw{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0 14px}
+.sw div{flex:1 1 140px;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:13.5px;background:#fff}
+.sw i{display:block;height:34px;border-radius:8px;margin-bottom:8px}
+footer.doc{padding:34px 0 54px;font-size:13.5px;color:var(--mut)}
+.fine{border-top:1px solid var(--line);padding-top:14px}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.92em;background:#fff;border:1px solid var(--line);border-radius:6px;padding:1px 5px}
+</style>
+</head>
+<body>
+<header class="doc"><div class="wrap">
+<p class="wordmark">flaminGO Mobile</p>
+<h1>Big-Carrier Bill：制作ガイド</h1>
+<p class="sub">プルーフ・オブ・コンセプトのキャリアブランドのための34.7秒のスペックCMが、構想され、構築され、声が付けられ、スコアが付けられ、仕上げられるまでを、AIを用いて最初から最後まで解説します。</p>
+<p class="credit">コンセプト、演出、制作は私が担当し、AIを用いて制作しました。ロゴは私が提供しました。</p>
+<div class="specs"><span><b>34.7秒</b> 最終カット</span><span><b>1920&times;1080</b> 24 fps</span><span><b>10</b> ショット</span><span><b>7</b> マスターリファレンス</span><span><b>5</b> カット</span><span><b>-16 LUFS</b> ステレオミックス</span></div>
+</div></header>
+
+<main class="wrap">
+
+<section>
+<p class="k">制作ステップ</p>
+<h2>パイプライン、順番に</h2>
+<ol>
+<li><b>まずリファレンス。</b>7つのマスターリファレンス（R1 から R7）を、ショットが存在する前に生成し、承認します。Frankie の全身、Frankie の顔、正確なスケールでの Frankie、Marcus のポートレート、Marcus の全身、キッチン、スタジオとスマートフォンのプレートです。</li>
+<li><b>開始フレーム。</b>すべてのショットは、Google Flow で Nano Banana Pro を使って作った静止画から始まります。添付するリファレンスは最大3つです。プロンプトはリファレンスを名指しし、ショットだけを記述します。キャラクターを言葉で再記述することは決してしません。</li>
+<li><b>モーション。</b>承認済みの静止画はそれぞれ Omni Flash 1.1 でアニメーション化します。フレームから動画へ、1本の連続ショットでカットは入れません。モデルが対話を演じるため、くちばしと口が正しい音節で動きます。</li>
+<li><b>ボイス。</b>生成した演技をセリフごとに抽出し、Speechify Studio Voice Changer でキャストの声に変換し、正確に元のタイムスタンプに戻します。そのためリップシンクは決して動きません。</li>
+<li><b>グラフィック。</b>キャプション、価格バッジ、隅のバグ、スマートフォン画面のロゴ、エンドカードをブランドシートに合わせて作り、映像の上に合成します。</li>
+<li><b>音楽とサウンド。</b>Suno のトロピカルポップのベッドを小節のラインでカットし、対話の下でダッキングします。Suno の歌入りジングルがスポットを締め、小さな合成エフェクトがジョークを際立たせます。</li>
+<li><b>編集。</b>ショットを放送のタイミングで組み立て、-16 LUFS にミックスし、1080p マスターと faststart の Web エンコードとして仕上げます。</li>
+<li><b>チェック。</b>生成前にすべてのプロンプトに自動チェックを実行します（この制作では238件）。完成した映像は台本に対してフレームごとにチェックします。</li>
+</ol>
+</section>
+
+<section>
+<p class="k">物語</p>
+<h2>1枚の長い請求書、1羽の小さなフラミンゴ</h2>
+<p>Marcus は、床にこぼれるほど長い電話の請求書を見て顔をしかめます。<span class="q">「うわ。これは大手キャリアの請求書だ。」</span>スマートフォンほどの大きさのフラミンゴである Frankie は、コーヒーマグの横で片脚で立っています。<span class="q">「こんにちは。Frankie。Flamingo から来ました。」</span>Marcus：<span class="q">「君は…フラミンゴだね。」</span></p>
+<p>Frankie は請求書の上でバランスを取り、スマートフォンの横に立ち、マグの縁の上に立ちながらキャリアを売り込みます。全国カバレッジ、通話、テキスト、データ無制限、契約なし、隠れた手数料なし、月額 $25 からのプラン、番号とスマートフォンはそのまま使えます。乗り換えのセリフでは Marcus の肩に乗ります。</p>
+<p>ボタンが冒頭の前提を回収します。Frankie は古い請求書を巣に変え、その中に落ち着いています。Marcus：<span class="q">「それは…僕の古い請求書？」</span>Frankie：<span class="q">「やっと役に立ったね。」</span>アナウンサー：<span class="q">"Flamingo Mobile."</span>パックショット、次に Frankie：<span class="q">「ピンクに乗り換えよう。」</span>エンドカード、歌入りジングルとともに：<span class="q">"Let's go, flaminGO!"</span></p>
+<p>構成は古典的なマスコットスポットです。1つのゲーム（家具の上に立つ非常に小さなセールスマン）、高まり（売り込みのポイントごとに足場が悪くなります）、次に最初のショットに結びつくボタン、最後に行動喚起です。</p>
+</section>
+
+<section>
+<p class="k">脚本</p>
+<h2>台本、v5 でカットされたもの</h2>
+<table>
+<tr><th style="width:15%">ショット</th><th style="width:37%">映像</th><th style="width:26%">対話</th><th>グラフィック</th></tr>
+<tr><td><b>S01</b> 大きな請求書</td><td>請求書がテーブルから床にこぼれます。Marcus が顔をしかめます。</td><td>Marcus：<span class="q">「うわ。これは大手キャリアの請求書だ。」</span></td><td>なし。問題を印象づけます。</td></tr>
+<tr><td><b>S02</b> Frankie が現れる</td><td>Frankie がマグの横で片脚で立ち、手を振ります。</td><td>Frankie：<span class="q">「こんにちは。Frankie。Flamingo から来ました。」</span></td><td>Frankie の横にネームタグ。ピンクの "Frankie"、白い "flaminGO Mobile" ラベル。</td></tr>
+<tr><td><b>S03</b> 二度見</td><td>Marcus がじっと見つめます。</td><td>Marcus：<span class="q">「君は…フラミンゴだね。」</span></td><td>なし。</td></tr>
+<tr><td><b>S04</b> 売り込み</td><td>Frankie が請求書自体の上でバランスを取ります。</td><td>Frankie：<span class="q">「小さいけれど、節約は大きいです。大手と同じ全国カバレッジです。」</span></td><td>キャプション："Coast-to-coast coverage"。</td></tr>
+<tr><td><b>S05</b> 無制限</td><td>スマートフォンの横の Frankie。</td><td>Frankie：<span class="q">「通話、テキスト、データは無制限です。」</span></td><td>3つの信号バーがスマートフォンの画面に1つずつ現れます。キャプション "Unlimited talk, text &amp; data"。</td></tr>
+<tr><td><b>S06</b> バランス芸</td><td>コーヒーマグの縁の上の Frankie。</td><td>Frankie：<span class="q">「契約なし。隠れた手数料なし。月額25ドルからのプランです。」</span></td><td>キャプション "No contracts." と "No hidden fees."。丸いバッジ "Plans from $25/mo*"。</td></tr>
+<tr><td><b>S07</b> 肩乗り</td><td>Frankie が Marcus の肩に乗り、目の高さにいます。</td><td>Frankie：<span class="q">「乗り換えは簡単です。番号はそのまま。スマートフォンもそのまま。」</span></td><td>キャプション "Keep your number." と "Keep your phone."。</td></tr>
+<tr><td><b>S08b</b> 巣</td><td>Frankie が古い請求書で編んだ巣の中に座ります。Marcus が身を寄せ、面白がって笑います。</td><td>Marcus：<span class="q">「それは…僕の古い請求書？」</span>Frankie：<span class="q">「やっと役に立ったね。」</span></td><td>なし。映像がジョークです。</td></tr>
+<tr><td><b>S09</b> パックショット</td><td>スタジオプレートの上のスマートフォン、プッシュイン。</td><td>アナウンサー：<span class="q">"Flamingo Mobile."</span></td><td>積み重ねたロゴをスマートフォンの画面にトラッキング。価格バッジはカットの前に消えるようタイミングを合わせます。</td></tr>
+<tr><td><b>S10</b> ピンクに乗り換えよう</td><td>スタジオの Frankie。エンドカードのパネルが横にスライドインします。</td><td>Frankie：<span class="q">「ピンクに乗り換えよう。」</span></td><td>エンドカードが組み上がります。鳥、ワードマーク、MOBILE、ジングルが歌う通りの "Let's go, flaminGO!"、細則。</td></tr>
+</table>
+<p>対話のショットは 1.115倍速で流れます。映像と音声を一緒に、ピッチを保ちます。このシリーズで、セリフを録り直さずに放送のタイミングを保つための標準的な手法です。</p>
+</section>
+
+<section>
+<p class="k">ルック</p>
+<h2>フォトリアルな世界にいる CG マスコット</h2>
+<p>フォーマットは、保険やキャリアのマスコットがテレビで使うものです。Pixar 品質の 3D キャラクター、高さ約15 cm。本物のキッチンに本当に立っているかのように撮影します。Frankie の羽は温かいコーラル色で、本物のフラミンゴの色です。マゼンタからは意図的に離しています。マゼンタは本物のキャリアの保護されたトレードカラーだからです。本物のキャリア名は決して出しません。比較は「大手」のままにし、すべての主張はスペック広告の細則でカバーします。</p>
+<p>スケールが幻想のすべてです。そのためリファレンス R3 でロックします。コーヒーマグとスマートフォンの間で、正確な大きさの Frankie です。R3 は Frankie が登場するすべてのショットに添付します。</p>
+</section>
+
+<section>
+<p class="k">ブランドとグラフィック</p>
+<h2>flaminGO のシステム</h2>
+<p>ワードマークはアートワークで、David が提供しました。"flamin" はプラム色、"GO" はピンク、"MOBILE" は2本の短いピンクの罫の間に間隔を空けた大文字、鳥はその上で片脚で立っています。明るい背景で使うため、オリジナルから透明バージョンをキーイングしました。</p>
+<div class="sw">
+<div><i style="background:#EC3D8C"></i><b>ピンク</b><br>#EC3D8C</div>
+<div><i style="background:#3B1431"></i><b>プラム</b><br>#3B1431</div>
+<div><i style="background:#F5A3C8"></i><b>ライトピンク</b><br>#F5A3C8</div>
+<div><i style="background:#FFF4F8;border:1px solid var(--line)"></i><b>ブラッシュ</b><br>#FFF4F8</div>
+</div>
+<ul>
+<li><b>タイプ：</b>キャプション、バッジ、ネームタグには Fredoka（SemiBold と Bold）。ラベルと細則には Figtree。どちらも無料の Google Fonts です。</li>
+<li><b>キャプション：</b>白いピルにピンクのアイコンディスクとプラム色の文字。小さなオーバーシュートでポップインし、Frankie や顔やスマートフォンの画面の上には決して置きません。</li>
+<li><b>価格バッジ：</b>丸く、ピンクで、"Plans from $25/mo*"、白いリング、回転しながら入ります。このスポットで唯一の数字です。</li>
+<li><b>隅のバグ：</b>ワードマークだけを載せたブラッシュ色のピル（v4 で私の指示により鳥を取り除き、ワードマークを拡大しました）。0.45秒から入り、エンドカードが来ると出ます。</li>
+<li><b>エンドカード：</b>ブラッシュ色のパネル、ロゴ自身の背景色が、右からスライドインします。鳥がポップアップし、ワードマークがワイプで入り、MOBILE がフェードし、次に "Let's go, flaminGO!" が歌われる通りに現れます。</li>
+<li><b>細則、</b>画面に保持されます。「スペック広告です。flaminGO Mobile はこの制作のために作られたコンセプトブランドです。表示されるプラン、価格、カバレッジは説明のためのものです。」</li>
+</ul>
+</section>
+
+<section>
+<p class="k">キャストと場所</p>
+<h2>2人の演者、2つの部屋</h2>
+<div class="card"><h3 style="margin-top:0">Frankie</h3><p style="margin:0">Pixar スタイルの 3D フラミンゴ。コーヒーマグほどの高さで、温かいコーラル色の羽、暗い先端を持つ長く曲がったくちばし。明るく、機敏で、親切です。素晴らしいヒントを持つ親しみやすい隣人で、決して大声のセールスマンではありません。登場するたびにリファレンス R1、R2、R3 で演じます。</p></div>
+<div class="card"><h3 style="margin-top:0">Marcus</h3><p style="margin:0">30代前半の男性。マスタード色のセーターを着て、温かく、少し戸惑っています。視聴者の代わりです。リファレンス R4（ポートレート、Marcus のすべてのショットに添付）と R5（全身）で演じます。</p></div>
+<div class="card"><h3 style="margin-top:0">キッチンとスタジオ</h3><p style="margin:0">R6 は物語が展開するフォトリアルなキッチンプレートです。R7 はパックショットとエンドカードのためのピンクのスタジオプレートで、キービジュアルと一致します。</p></div>
+</section>
+
+<section>
+<p class="k">リファレンス</p>
+<h2>R1 から R7、まず作ってロックする</h2>
+<table>
+<tr><th style="width:12%">リファレンス</th><th style="width:34%">内容</th><th>使用場所</th></tr>
+<tr><td><b>R1</b></td><td>Frankie、全身</td><td>S10 と、キービジュアルのキャラクターソース</td></tr>
+<tr><td><b>R2</b></td><td>Frankie、顔のクローズアップ</td><td>表情とくちばしのリファレンス</td></tr>
+<tr><td><b>R3</b></td><td>正確な大きさの Frankie、マグとスマートフォンの間</td><td>Frankie のすべてのショット、S02 から S09 とキービジュアル。サイズロックです。</td></tr>
+<tr><td><b>R4</b></td><td>Marcus、ポートレート</td><td>Marcus が登場するすべてのショット</td></tr>
+<tr><td><b>R5</b></td><td>Marcus、全身</td><td>衣装と体格のリファレンス</td></tr>
+<tr><td><b>R6</b></td><td>キッチンプレート</td><td>すべてのキッチンショット</td></tr>
+<tr><td><b>R7</b></td><td>スタジオとスマートフォンのプレート</td><td>パックショットとエンドカード</td></tr>
+</table>
+<p>作業ルールは『Occupied』から引き継ぎました。リファレンスが言葉に勝ちます。ショットのプロンプトは、添付した各画像が何であるかを名指しすることから始まり、次にショットだけを記述します。ショットごとに材料は最大3つです。すべての画像プロンプトは完全なスタイルサフィックスで終わります。すべてのモーションプロンプトはロック、Audio ライン、そして "One continuous, unbroken shot, no cuts." で終わります。ほぼ正しい静止画は、単一変更の編集プロンプト（"Edit this image. Only change: ... Nothing else changes."）で直し、ゼロから再生成することは決してしません。</p>
+</section>
+
+<section>
+<p class="k">ショット</p>
+<h2>制作ノート</h2>
+<ul>
+<li><b>S01 から S07</b> は計画通りに生成しました。ショットのリファレンスからの開始フレーム、6秒から8秒の1本の連続モーションクリップ、リップシンクのためにモデルが演じる対話です。</li>
+<li><b>S08 は S08b になりました。</b>元のクローザーでは Marcus が高く立ち上がり、Frankie が「これで背が高くなったね。」というセリフを言いました。3回のカットを通して決して決まりませんでした。立ち上がりがスローモーションに読め、セリフがワイドショットに結びついてしまいました。コメディの構成（1つのゲーム、高まり、前提を回収するボタン）に基づいて提案された差し替えが、巣です。S01 の長い請求書が Frankie のベッドになります。開始フレームはアイデンティティのための編集ルートで作りました。承認済みの S06 フレームに R3 と R4 を添付したものです。新しい対話は、他のすべてのセリフと同じ抽出、変換、差し替えのルートで収録し、生成したクリップからの Marcus の笑いと Frankie の満足したため息はミックスに残しました。</li>
+<li><b>S09</b> はスマートフォンの画面にロゴを載せ、プッシュインにトラッキングします。v5 では価格バッジが0.25秒早く出るようタイミングを合わせ、S10 へのカットの1フレーム前に完全になくなります。</li>
+<li><b>S10</b> は Frankie がすでに左3分の1にいる状態でフレーミングしました。そのためエンドカードのパネルがスライドインしてもリフレームは必要ありません。</li>
+</ul>
+</section>
+
+<section>
+<p class="k">ボイスプラン</p>
+<h2>演技は残し、声だけを変える</h2>
+<p>Flow が生成した対話は、くちばしと口の動きすべてとすでにシンクしています。そのためタイミングは触れないものとして扱います。各キャラクターのセリフを、タイミングマップとともに1つのファイルに抽出します。そのファイルを選んだ1つの声で Speechify Studio Voice Changer に通します。次にすべてのセリフを元のタイムスタンプに戻します。この制作で測定したところ、変換したセリフはオリジナルに対して 0 ms のオフセットで着地し、エンベロープ相関は 0.87 から 0.96 でした。</p>
+<ul>
+<li><b>Frankie：</b>Speechify Voice Changer、声は Lindsey (F)、アクセントオン。ブリーフ：30代の明るく機知に富んだ声、温かく少しハスキー、中立的な北米の発音、明るいコメディのタイミング、前向きですが決して大声ではなく、アナウンサー読みではありません。</li>
+<li><b>Marcus：</b>生成したセリフに Speechify Voice Changer。ブリーフ：リラックスして温かく、中低音、自然で会話的、少し戸惑い、ユーモアがあり、演者ではありません。v5 では、David 自身が Speechify で冒頭のセリフを収録し、Frankie にレベルを合わせ、S01 を少し長くして「こんにちは。」にまだ間があるようにしました。</li>
+<li><b>アナウンサー：</b>Speechify のテキスト読み上げ、Julien (M)、速度とピッチはゼロ。ブリーフ：40代前半の温かく、明瞭で、自信のある中音域のカナダ人の読み。信頼できる地元サービスのための、洗練されたテレビCMのデリバリー。親しみやすく安心感があり、決して売り込み口調ではありません。</li>
+<li><b>合わせたセリフ：</b>Frankie の2つのセリフをテキスト読み上げで録り直し、ピッチを保ったタイムストレッチで既存のくちばしの動きに一語ずつ合わせ、元の開始から 40 ms 以内に着地させました。</li>
+</ul>
+</section>
+
+<section>
+<p class="k">スコアとサウンド</p>
+<h2>Suno のベッド、Suno のジングル、小さな音</h2>
+<p><b>ベッド。</b>Suno のトロピカルポップ、ハ長調、104 BPM。ウクレレのストラム、マリンバ、軽いスティールドラムのアクセント、フィンガースナップとハンドクラップ、温かく丸いベース、いたずらっぽい口笛のフック。ばかばかしいのではなく、晴れやかで自信があります。インストゥルメンタルです。ベッドは小節のラインでカットし、最後の3分の1の下で独自のブレイクダウンにつなぎ、最後のヒットがエンドカードに正確に重なるようにし、対話のすべてのセリフの下で約 9 dB ダッキングします。</p>
+<p><b>ジングル。</b>短い Suno の歌入りジングル、"Let's go, flaminGO!"。2番目の歌唱フレーズを、そのピックアップビートから使い、エンドカードが組み上がるにつれて "Let's go" と "flaminGO!" が画面の文字と重なるように配置します。</p>
+<p><b>エフェクト。</b>小さくドライで、ほとんどが合成です。請求書の下の紙のざわめきと滑り、Frankie の登場での柔らかいポップ、手を振るときの小さな羽ばたき、紙の上の足のタップ、信号バーが現れるときの3つの柔らかいポップ、Frankie がマグの縁に落ち着くときの陶器のチーンという音、パックショットでのきらめき、クローザーでの瞬き。Marcus の笑いと巣のショットの中の紙の音は、生成したクリップ自身の音声で、残しました。</p>
+</section>
+
+<section>
+<p class="k">編集</p>
+<h2>5カット、v1 から v5</h2>
+<ul>
+<li><b>v1（30.0秒）。</b>最初の完全な組み立てです。10ショットすべて、オーバーレイ、音楽のつなぎ、-16 LUFS のミックス。仕組みは働きました。ブランドはその日のうちに差し替えました。</li>
+<li><b>v2（33.6秒）。</b>flaminGO へのリブランドです。オーバーレイをピンクとプラムに再着色し、ネームタグを書き直し、パックショットのスマートフォンに積み重ねたロゴを置き、隅のバグを追加し、エンドカードをブラッシュの上に歌入りジングルで作り直しました。S08 の立ち上がりは、より速い区間が不自然に読めたため、標準の 1.115倍速に均しました。上映時間は、ジョークを圧縮するよりも30秒を超えることを許しました。</li>
+<li><b>v3（32.4秒）。</b>ネームタグを右に移動し、Frankie の顔を決して覆わないようにしました。S08 の立ち上がりのタイミングを直し、Marcus のセリフを Frankie のレベルまで上げ、エンドカードの構築を歌の言葉に合わせて締めました。</li>
+<li><b>v4（34.1秒）。</b>S08 を S08b、巣に完全に差し替え、標準ルートで新しい声を付けました。隅のバッジをワードマークだけに簡素化し、大きくしました。</li>
+<li><b>v5（34.7秒）、最終版。</b>冒頭のセリフを David が Marcus の声で録り直し、先頭に配置しました。S01 を0.5秒長くし、それ以降のすべてを13フレーム後に移動しました。パックショットの価格バッジは早く出るため、カットをまたいで Frankie と重なることは決してありません。</li>
+</ul>
+</section>
+
+<section>
+<p class="k">プロンプトの整合性</p>
+<h2>生成前にチェックしました</h2>
+<p>プロンプトセットで238件の自動チェックに合格しました。内容は次の通りです。すべての画像プロンプトが完全なスタイルサフィックスで終わり、それを正確に1つだけ持ちます。すべてのショットプロンプトが、添付したリファレンスを名指しすることから始まり、材料は最大3つで、Frankie、Marcus、キッチンについての競合する言葉による記述を含みません。Frankie のすべてのショットにサイズアンカーがあります。Marcus のすべてのショットに R4 を添付します。すべてのモーションプロンプトがロック、Audio ライン、カットなしのラインで終わります。モーションプロンプトのカメラ前のセリフは台本と一言一句一致します。本物のキャリア名なし、マゼンタなし、借りたマスコットの特徴なしです。</p>
+</section>
+
+<section>
+<p class="k">仕上げ</p>
+<h2>仕様と納品物</h2>
+<ul>
+<li><b>マスター：</b>1920&times;1080、24 fps、H.264、ステレオ AAC、-16 LUFS インテグレーテッド、トゥルーピーク -3 dB、約 29 MB。</li>
+<li><b>Web：</b>同じカット、faststart H.264、約 10 MB。スタジオサイトで再生されるコピーです。</li>
+<li><b>静止画：</b>最終カットからのフレーム。ネームタグ（4.2秒）、キャプション（16.9秒）、巣（23.0秒と26.5秒）、価格バッジ付きパックショット（28.4秒）、エンドカード（33.8秒）です。</li>
+<li><b>他に残したもの：</b>クリーンな開始フレーム10点すべてと巣のフレーム、16:9 と 4:5 のキービジュアル、リファレンス R1 から R7、ロゴセット（オリジナル、積み重ね、ワードマーク、鳥、隅のバッジ）、ショットごとの対話ステム、音楽ベッドとジングル、そして以前のすべてのカットです。</li>
+</ul>
+<p>スペック広告です。flaminGO Mobile はこの制作のために作られたコンセプトブランドです。表示されるプラン、価格、カバレッジは説明のためのものです。</p>
+</section>
+
+</main>
+<footer class="doc"><div class="wrap">
+<p class="fine">flaminGO Mobile『Big-Carrier Bill』。スペックCMです。コンセプト、演出、制作は私が担当し、AIを用いて制作しました。ロゴは私が提供しました。SOLENTEI 369『First Light』、『Occupied』、ORIVEX ARC-7、Fizzy Pop 2026 の制作ガイドの姉妹編です。</p>
+</div></footer>
+</body>
+</html>

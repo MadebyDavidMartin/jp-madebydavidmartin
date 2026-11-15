@@ -1,0 +1,439 @@
+<!doctype html><html lang="ja"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>ARC-7 制作ガイド</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>html{--sans:"Noto Sans JP","Geist","Segoe UI",system-ui,-apple-system,sans-serif}</style>
+<style>
+/* Layout: lab spec-sheet. Sticky step rail on the left, one step at a time on the right, prev/next at the foot. */
+:root{
+  --bg:#F1F3F2; --panel:#FFFFFF; --ink:#14181B; --muted:#5B646B; --line:#D5DADC; --soft:#E7EBEB;
+  --amber:#D9670A; --amber-ink:#FFFFFF; --amber-soft:#FBE9D9; --ok:#2F7D4F;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1113; --panel:#161A1D; --ink:#E6EAEC; --muted:#8F989F; --line:#2A3135; --soft:#1D2226;
+  --amber:#FF8A1F; --amber-ink:#160B02; --amber-soft:#2B1D10; --ok:#5CC08A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1113; --panel:#161A1D; --ink:#E6EAEC; --muted:#8F989F; --line:#2A3135; --soft:#1D2226;
+  --amber:#FF8A1F; --amber-ink:#160B02; --amber-soft:#2B1D10; --ok:#5CC08A; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.6 var(--f-body);margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:20px;padding-block:24px 64px}
+header.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:24px}
+.brand{display:flex;align-items:center;gap:14px}
+.brand svg{width:40px;height:40px;flex:none}
+.brand h1{font:700 30px/1 var(--f-display);letter-spacing:.04em;margin:0;text-transform:uppercase}
+.brand p{margin:2px 0 0;color:var(--muted);font-size:13px}
+.progress{font:500 12px/1 var(--f-mono);color:var(--muted);display:flex;align-items:center;gap:10px}
+.bar{width:160px;height:6px;background:var(--soft);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--amber);width:0;transition:width .3s}
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:32px;align-items:start}
+nav.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);display:flex;flex-direction:column;gap:2px}
+.rail .grp{font:600 11px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:14px 0 6px 10px}
+.rail .grp:first-child{margin-top:0}
+.rail button{all:unset;cursor:pointer;display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:6px;font-size:14px;color:var(--ink)}
+.rail button:hover{background:var(--soft)}
+.rail button:focus-visible{outline:2px solid var(--amber);outline-offset:1px}
+.rail button[aria-current="step"]{background:var(--panel);box-shadow:inset 3px 0 0 var(--amber);font-weight:600}
+.rail .dot{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--line);flex:none;display:grid;place-items:center;font-size:10px;color:var(--amber-ink)}
+.rail .done .dot{background:var(--ok);border-color:var(--ok)}
+.rail .done .dot::after{content:"✓"}
+.rail .tc{margin-left:auto;font:400 11px var(--f-mono);color:var(--muted)}
+main{min-width:0}
+.eyebrow{font:500 12px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--amber);margin:0 0 10px}
+h2{font:700 40px/1.05 var(--f-display);text-transform:uppercase;letter-spacing:.02em;margin:0 0 12px;text-wrap:balance}
+h3{font:600 20px/1.2 var(--f-display);text-transform:uppercase;letter-spacing:.05em;margin:0 0 10px}
+.lede{font-size:16px;color:var(--muted);max-width:66ch;margin:0 0 24px}
+section.step{display:flex;flex-direction:column;gap:22px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:20px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.specs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.specs div{background:var(--panel);padding:14px 16px}
+.specs b{display:block;font:700 26px/1.1 var(--f-display);letter-spacing:.02em}
+.specs span{font-size:12px;color:var(--muted)}
+.timeline{display:flex;gap:2px;border-radius:6px;overflow:hidden;min-width:640px}
+.timeline .seg{background:var(--soft);padding:10px 10px 12px;min-width:0;cursor:pointer;border:0;text-align:left;color:var(--ink);font:inherit}
+.timeline .seg:hover{background:var(--amber-soft)}
+.timeline .seg:focus-visible{outline:2px solid var(--amber);outline-offset:-2px}
+.timeline .seg small{display:block;font:500 11px var(--f-mono);color:var(--amber)}
+.timeline .seg strong{display:block;font:600 15px/1.2 var(--f-display);text-transform:uppercase;letter-spacing:.04em;margin:3px 0 4px}
+.timeline .seg em{display:block;font-style:normal;font-size:12px;line-height:1.35;color:var(--muted)}
+.scroll{overflow-x:auto}
+.flow{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch}
+.flow .node{flex:1 1 150px;border:1px solid var(--line);border-radius:6px;padding:12px;background:var(--panel)}
+.flow .node b{display:block;font:600 15px var(--f-display);text-transform:uppercase;letter-spacing:.05em}
+.flow .node span{font-size:13px;color:var(--muted)}
+.flow .node.me{border-color:var(--amber)}
+.flow .node .who{font:500 11px var(--f-mono);color:var(--amber);letter-spacing:.08em;text-transform:uppercase}
+ul.clean,ol.clean{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.prompt{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel)}
+.prompt .ph{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--soft)}
+.prompt .ph b{font:600 14px var(--f-display);text-transform:uppercase;letter-spacing:.07em}
+.prompt .ph small{display:block;font:400 12px var(--f-body);color:var(--muted);text-transform:none;letter-spacing:0}
+.prompt pre{margin:0;padding:14px;white-space:pre-wrap;word-wrap:break-word;font:13px/1.6 var(--f-mono)}
+.copy{all:unset;cursor:pointer;font:600 12px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;padding:7px 12px;border-radius:5px;background:var(--amber);color:var(--amber-ink);white-space:nowrap}
+.copy:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.copy.ok{background:var(--ok);color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:500 12px var(--f-mono);padding:4px 9px;border:1px solid var(--line);border-radius:999px;background:var(--panel)}
+.chip.amber{border-color:var(--amber);color:var(--amber)}
+.meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.meta h4{font:600 12px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+.meta p{margin:0}
+.vo{font-size:17px;line-height:1.5;border-left:3px solid var(--amber);padding-left:12px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+td.tc{font:500 13px var(--f-mono);white-space:nowrap;font-variant-numeric:tabular-nums}
+.note{font-size:13px;color:var(--muted);border:1px dashed var(--line);border-radius:6px;padding:10px 12px}
+.foot{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding-top:18px;margin-top:8px}
+.btn{all:unset;cursor:pointer;padding:10px 16px;border-radius:6px;border:1px solid var(--line);font:600 14px var(--f-body);background:var(--panel)}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.btn[disabled]{opacity:.35;cursor:default}
+label.done-toggle{display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer}
+label.done-toggle input{width:18px;height:18px;accent-color:var(--ok)}
+.mark-preview{display:flex;flex-wrap:wrap;gap:16px}
+.mark-preview .tile{flex:1 1 240px;border-radius:8px;padding:28px;display:flex;align-items:center;justify-content:center;gap:14px;min-height:130px}
+.tile.light{background:#F4F5F5;color:#14181B;border:1px solid var(--line)}
+.tile.dark{background:#0C0F11;color:#F4F5F5}
+.tile .wm{font:700 34px/1 "Barlow Condensed",Arial,sans-serif;letter-spacing:.22em}
+.tile .sub{font:500 11px/1 "IBM Plex Mono",monospace;letter-spacing:.18em;opacity:.7;margin-top:6px}
+.tile svg{width:46px;height:46px}
+@media (max-width:860px){
+  .layout{grid-template-columns:1fr}
+  nav.rail{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+  .rail .grp{display:none}
+  .rail button{white-space:nowrap;padding:6px 10px}
+  .rail .tc{display:none}
+  .grid2,.meta{grid-template-columns:1fr}
+  .specs{grid-template-columns:repeat(2,minmax(0,1fr))}
+  h2{font-size:32px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="17" fill="none" stroke="var(--ink)" stroke-width="3.2" stroke-dasharray="80 27" transform="rotate(-50 24 24)"/><circle cx="37.6" cy="13.6" r="4.2" fill="var(--amber)"/></svg>
+      <div>
+        <h1>ORIVEX ARC-7</h1>
+        <p>45秒のコンセプト製品フィルムの制作ガイドです。Google Flow、Speechify、HyperFramesを使用します。</p>
+      </div>
+    </div>
+    <div class="progress"><span id="progTxt">0 / 0 完了</span><div class="bar"><i id="progBar"></i></div></div>
+  </header>
+  <div class="layout">
+    <nav class="rail" id="rail" aria-label="ステップ"></nav>
+    <main id="main" aria-live="polite"></main>
+  </div>
+</div>
+
+<script>
+const B = {
+  ROBOT: "the ORIVEX ARC-7, a seven-axis industrial precision robotic arm with a slender, architectural silhouette: matte ceramic-white composite shell panels, satin graphite joint housings, a brushed titanium wrist ending in a hexagonal quick-change tool flange, a thin glowing amber light ring around every joint, mounted on a low round graphite pedestal base. Precise machined panel seams and small hex fasteners, no visible cables.",
+  LAB: "a pristine minimalist robotics lab: seamless matte white walls and ceiling with recessed linear LED light strips, a pale grey polished epoxy floor, a black honed-granite precision workbench at the centre of the room, a frosted glass partition in the background, cool 5600K daylight-balanced lighting, soft shadows, a faint clean haze in the air, sterile and quiet.",
+  OBJECT: "a palm-sized sphere made of an intricate titanium gyroid lattice, satin bead-blasted finish with polished edges, a small polished gold core visible at its centre",
+  STYLE: "Photorealistic high-end commercial product cinematography, shot on ARRI Alexa 35, 50mm prime lens at f/2.8, crisp micro detail, high dynamic range, neutral grade with cool whites and warm amber accents, subtle lens falloff. 16:9 frame. No text, no logos, no watermarks, no people.",
+  AUDIO: "No music, no voices, no dialogue."
+};
+
+const REFS = [
+  {id:"R1", file:"R1_arc7_hero.png", name:"ARC-7 ヒーロー（キャラクターリファレンス）", why:"これがロボットのアイデンティティです。すべてのショットでリファレンス画像として使い、アームの形、色、アンバーリングを保ちます。",
+   prompt:`Studio product photograph of ${B.ROBOT} The arm stands in a raised, ready pose, seen in a three-quarter view from slightly below, the entire arm and its base fully in frame and centred, on a seamless light grey studio backdrop with a soft floor shadow. Even softbox lighting reveals every panel seam and joint. ${B.STYLE}`,
+   check:["アームは正確に1本、見える関節は6つか7つ、融合したり溶けたりした部分がないこと","白いシェル、グラファイトの関節、すべての関節にアンバーリングがあること","手首に六角形のフランジ、丸いグラファイトのベースがあること","アームのどこにも文字やロゴがないこと"]},
+  {id:"R2", file:"R2_arc7_wrist.png", name:"ARC-7 手首の詳細", why:"マクロショット（03、04、05）に使用し、クローズアップがアーム全体と一致するようにします。",
+   prompt:`Close-up product photograph of the wrist section of ${B.ROBOT} The frame is filled by the brushed titanium wrist, the hexagonal quick-change tool flange and one glowing amber light ring, seamless light grey backdrop, shallow depth of field. ${B.STYLE}`,
+   check:["R1の素材と正確に一致すること","六角形のフランジがはっきり読み取れること","アンバーリングは細い帯であり、大きく光る塊ではないこと"]},
+  {id:"R3", file:"R3_lab_plate.png", name:"ラボ環境プレート", why:"部屋を固定します。すべてのショットに同じラボが登場します。",
+   prompt:`Wide establishing interior photograph of ${B.LAB} The black granite workbench is empty and centred, camera at chest height, symmetrical one-point perspective with generous negative space. ${B.STYLE}`,
+   check:["部屋が工場ではなく、清潔で臨床的な印象であること","御影石の作業台が中央にあり、何も置かれていないこと","看板、文字のある画面、人がないこと"]},
+  {id:"R4", file:"R4_lattice_sphere.png", name:"ヒーローオブジェクト：格子球体", why:"ARC-7が作るものです。ショット05、06、07、08で使用します。",
+   prompt:`Studio product photograph of ${B.OBJECT}, resting on a black honed-granite surface, seamless light grey backdrop, soft overhead light with one crisp specular highlight running across the lattice. ${B.STYLE}`,
+   check:["格子が規則的で精緻であり、ランダムなノイズではないこと","格子越しに金の芯が見えること","手のひらサイズに見えること"]}
+];
+
+const SHOTS = [
+  {n:"01", name:"パワーアップ", tc:"0:00 to 0:05", dur:5, refs:["R1","R3"],
+   purpose:"イントロです。暗いラボに明かりがつき、アームのアンバーリングが点灯します。ブランドマークがフェードインします。",
+   image:`Wide, symmetrical shot of ${B.LAB} The room is in near darkness, lit only by faint blue-grey ambient light. ${B.ROBOT} It stands folded in a compact rest pose on the granite workbench as a dark silhouette, its amber rings unlit. Low camera at workbench height. ${B.STYLE}`,
+   anim:`Static camera with a very slow push-in. The ceiling LED strips switch on one row at a time from the back of the room to the front, flooding the lab with clean white light. As the light reaches the workbench, the amber light rings on the robotic arm ignite one joint at a time, from the base up to the wrist. The arm itself does not move. Audio: deep electrical hum, sequential relay clicks, a soft rising power-up tone. ${B.AUDIO}`,
+   vo:"In fabrication, there has always been a trade-off.",
+   overlay:"ORIVEXのマークとワードマークが中央にフェードイン（1.8s）し、保持したあとフェードアウト（4.6s）します。",
+   check:["明かりが順番につき、ちらつきやストロボがないこと","リングが部屋のほかの場所ではなく、アームの上で点灯すること","アームが静止していること"]},
+  {n:"02", name:"リビール", tc:"0:05 to 0:11", dur:6, refs:["R1","R3"],
+   purpose:"ヒーローの登場です。改訂版（v2）：最初の版では全身の展開とカメラのオービットを同時に求めたため、Veoがアームの形を作り直してしまいました。今回はアームがR1と同じ上げたポーズを保ち、カメラが動きます。アームの動きは小さくゆっくりとした手首の回転だけです。",
+   image:`Three-quarter low-angle hero shot of ${B.ROBOT} The arm stands in a raised, ready pose, exactly matching the reference image, on the black granite workbench in ${B.LAB} The entire arm and its base are fully in frame with space around them. Amber rings glowing, clean bright background with a soft gradient, a rim light tracing the edges of the white shell. ${B.STYLE}`,
+   anim:`Slow, smooth cinematic dolly: the camera glides about 20 degrees around the robotic arm from left to right at a constant speed, keeping the whole arm in frame. The arm holds its pose completely still. Its body, base and joints do not move and keep exactly the same shape for the whole shot. Only the wrist turns slowly about a quarter turn, then stops. Soft reflections slide across the rigid white shell as the camera moves. Audio: one quiet smooth servo whir, soft room tone. ${B.AUDIO}`,
+   alt:[
+     ["まだ形が変わる場合は、手首の回転を削除してください","手首に関する文を削除し、アームを完全に静止させます。静止した被写体の周りをカメラが動くショットはVeoが最も安定して生成でき、それでもヒーローリビールとして成立します。"],
+     ["展開を戻したい場合は、両端を固定してください","終了フレームを作成します。S02.pngを添付し、プロンプトに 'Edit this image. Keep the same camera, lighting and robot. Only change: the arm is folded low in a compact crouch, wrist tucked in. Nothing else changes. No text, no logos.' と入力します。S02_folded.pngとして保存します。次にFrames to Videoで、S02_folded.pngをSTART、S02.pngをENDとして使い、カメラを固定したまま、プロンプトに 'Locked-off camera. The robotic arm slowly rises from its crouch into the ready pose. Rigid machined parts keep their exact shape and size. Audio: smooth servo whir. No music, no voices.' と入力します。両端のポーズとカメラを固定すると、Veoが発明しなければならないものは1つだけになります。"],
+     ["Qualityを使い、ゆっくり生成してください","Veo 3.1 QualityはFastよりはるかに形を保ちます。遅い動きは速い動きより形を保ちます。Claudeが編集で速くできます。"]
+   ],
+   vo:"Speed, or precision. Meet ARC-7, by Orivex.",
+   overlay:"左下にタイトル：ARC-7 / PRECISION FABRICATION ARM。隅のブランドバグが現れ、エンドカードまで残ります。",
+   check:["すべてのフレームでアームの関節の数と形が同じであること","動くのはカメラと手首だけであること","アームがR1と一致すること"]},
+  {n:"03", name:"ツール交換", tc:"0:11 to 0:17", dur:6, refs:["R2","R3"],
+   purpose:"マクロです。手首がクレードルからレーザーヘッドを拾い上げます。改訂版（v2）：2つの物体が接合する場面は動画モデルが形をモーフィングさせる場所です。そのため、このショットは開始フレームと終了フレームの両方で固定し、似たツールのラックではなく1つのツールだけを使い、ゆっくり生成して編集で速くします。",
+   image:`Extreme close-up macro, side view, of the wrist and hexagonal quick-change flange of ${B.ROBOT} The empty flange hovers about five centimetres directly above a single slim cylindrical laser end-effector that stands upright in a machined graphite cradle on the black granite workbench. Only one tool in frame. Amber ring glowing, very shallow depth of field, the white lab softly blurred behind. ${B.STYLE}`,
+   endImage:`Edit this image. Keep the exact same camera angle, framing, lighting, background, robotic wrist and laser tool. Only change: the laser end-effector is now attached to the bottom of the hexagonal flange and has been lifted about five centimetres straight up, out of the graphite cradle. The cradle is now empty. Two small amber indicator lights glow on the flange. Nothing else changes. No text, no logos.`,
+   anim:`Locked-off macro shot. The camera does not move. The robotic wrist moves slowly straight down until its flange meets the top of the laser tool, pauses for a moment, then lifts the tool straight up out of the cradle. One vertical movement down and one back up, with no rotation and no tilting. The wrist, the flange and the laser tool are rigid machined metal and keep exactly the same shape and size for the whole shot. Two small amber indicator lights blink on at the moment of contact. Audio: smooth servo whine, one solid metallic clunk at contact, a short electronic chirp. ${B.AUDIO}`,
+   alt:[
+     ["それでもモーフィングする場合はプランB：2つのクリップに分割してください","S03aを生成します。開始はS03.pngで、プロンプトはフランジがツールに触れて止まる場面で終わります。S03bを生成します。開始はS03_end.pngで、手首がツールをさらに上へ持ち上げ、フレームの外へ運びます。Claudeが接触の瞬間で両者をつなぎ、短いアンバーのフラッシュとガチャンという音でつなぎ目を隠します。実際のCMもこの方法で撮影します。"],
+     ["なぜゆっくりなのか","速い動きはVeoが形を崩す場面です。動きをゆっくり生成し、HyperFramesが編集でクリップを1.5から2倍に速くします。これにより0.4秒の仕様も伝わります。"],
+     ["まだずれますか","FastではなくVeo 3.1 Qualityで再生成してください。アニメーション化する前に、開始と終了の静止画が互いに正確に一致しているか確認してください。両者の差はすべてモーフィングで「解決」されてしまいます。"]
+   ],
+   vo:"Twelve tool heads. A full tool change in four tenths of a second.",
+   overlay:"フランジへの引き出し線付きコールアウト：12 TOOL HEADS · 0.4 s TOOL CHANGE。クリップは1.5から2倍速で再生します。",
+   check:["手首とツールがずっと形を保つこと","動きがまっすぐ下とまっすぐ上だけで、ねじれがないこと","最後にツールがフランジに取り付けられていること"]},
+  {n:"04", name:"レーザーエッチング", tc:"0:17 to 0:23", dur:6, refs:["R2","R3"],
+   purpose:"エクストリームマクロです。レーザーがチタンに格子パターンを描きます。",
+   image:`Extreme macro of a slim laser end-effector mounted on the wrist of ${B.ROBOT} It hovers a few millimetres above a polished titanium disc clamped on the black granite workbench. A hair-thin bright laser point touches the metal, delicate glowing etched lines form a precise geometric lattice pattern, tiny bright sparks and faint wisps of smoke lit by cool light, very shallow depth of field. ${B.STYLE}`,
+   anim:`Slow lateral slider move across the workpiece. The laser traces the geometric pattern across the titanium with fast, perfectly smooth movements, leaving glowing lines that cool from white-hot to amber to grey. Fine sparks and thin smoke curl upward. Audio: high-frequency laser hiss, soft crackle, faint fume-extractor airflow. ${B.AUDIO}`,
+   vo:"It etches titanium to within two microns. Every pass. Every part.",
+   overlay:"仕様表示：REPEATABILITY ±2 µm。加えて、小さなライブ座標表示（X/Y/Z）が刻々と変わります。",
+   check:["線が金属にエッチングされたように見え、描かれたようではないこと","パターンが幾何学的で規則的であること","火花が細かく、花火のようではないこと"]},
+  {n:"05", name:"微小配置", tc:"0:23 to 0:29", dur:6, refs:["R2","R4"],
+   purpose:"マクロです。マイクログラッパーが格子の中に金の芯を据えます。",
+   image:`Macro close-up of a slender precision micro-gripper mounted on the wrist of ${B.ROBOT} It holds a tiny polished gold core between two fine tweezer fingers, about to place it into the centre of ${B.OBJECT}, which is partly assembled and sits on the black granite workbench. Amber ring glowing at the edge of frame, razor-thin focus on the gold core. ${B.STYLE}`,
+   anim:`Very slow push-in. The micro-gripper descends with deliberate precision and places the gold core into the centre of the lattice, pauses for a beat, then the tweezer fingers open and the gripper withdraws straight up. Absolutely steady, no wobble. Audio: delicate servo ticks, a tiny metallic seating click. ${B.AUDIO}`,
+   vo:"Seven axes place components smaller than a grain of sand.",
+   overlay:"コールアウト：7 AXES · 0.01° JOINT RESOLUTION。金の芯に中心を合わせた細いターゲットレティクル付きです。",
+   check:["金の芯がずっと同じ大きさであること","グラッパーの指がきれいに開くこと","手や人の要素が登場しないこと"]},
+  {n:"06", name:"インライン検査", tc:"0:29 to 0:35", dur:6, refs:["R1","R3","R4"],
+   purpose:"アームが完成した作品をスキャンします。HyperFramesがその上に測定HUDを追加します。",
+   image:`Medium shot of ${B.ROBOT} It holds a compact scanning head angled down at ${B.OBJECT}, which sits on the granite workbench. A thin bright blue-white laser scan line fans across the sphere and a faint projected grid pattern falls on the granite. Behind it is ${B.LAB} ${B.STYLE}`,
+   anim:`Slow orbit to the right. The arm moves the scanning head in a smooth arc around the sphere while the laser line sweeps continuously across the lattice surface, light rippling over its geometry. Audio: soft scanning sweep tone, gentle servo hum. ${B.AUDIO}`,
+   vo:"And it inspects its own work as it goes, at over a million points per second.",
+   overlay:"測定HUD：スキャンフレームのブラケット、1.2 M PTS/Sまで上がるポイントカウンター、公差表示 Δ 0.8 µm · PASS。",
+   check:["スキャンラインが球体の上にとどまること","アームと球体がR1とR4に一致すること","HUDのために背景がきれいなままであること"]},
+  {n:"07", name:"完成品", tc:"0:35 to 0:40", dur:5, refs:["R1","R4"],
+   purpose:"製品ヒーローです。完成した球体が台座の上で回り、背後でアームが引き下がります。",
+   image:`Product hero shot of ${B.OBJECT}, resting on a small rotating black display plinth on the granite workbench. ${B.ROBOT} It is in soft focus in the background, retracting upward, amber rings glowing. A crisp highlight glints across the titanium lattice, dramatic clean side light, background falling from dark to white. ${B.STYLE}`,
+   anim:`Slow push-in toward the sphere as the plinth rotates smoothly. Glints of light travel across the lattice and the gold core catches the light. In the background the robotic arm finishes retracting and settles into a still ready pose. Audio: soft low whoosh, faint motor hum. ${B.AUDIO}`,
+   vo:"From digital design to finished part, in a single cell.",
+   overlay:"中央の文：DESIGN TO FINISHED PART. ONE CELL.",
+   check:["球体がモーフィングせずに回ること","アームが柔らかく脇役のままであること","金の芯がまだ見えること"]},
+  {n:"08", name:"アウトロ", tc:"0:40 to 0:45", dur:5, refs:["R1","R3","R4"],
+   purpose:"ワイドなクロージングショットです。明かりが落ち、リングが光り、その上にエンドカードが組み上がります。",
+   image:`Wide symmetrical shot of the full ${B.LAB} ${B.ROBOT} It stands in a calm rest pose at the centre of the granite workbench, with ${B.OBJECT} on a small black plinth beside it. Generous empty space in the upper third of the frame. The room lights are slightly dimmed so the amber rings stand out. ${B.STYLE}`,
+   anim:`Locked-off camera with a very slow pull-back. The ceiling lights dim gently to about half brightness, leaving the amber light rings glowing on the still robotic arm. Nothing else moves. Audio: room tone slowly fading out, a single soft low tone. ${B.AUDIO}`,
+   vo:"Orivex ARC-7. Precision, without compromise.",
+   overlay:"暗くしたショットの上にエンドカード：ORIVEXのマーク、ARC-7、タグライン PRECISION, WITHOUT COMPROMISE、プレースホルダーURL orivex.example。",
+   check:["上部3分の1がエンドカードのためにきれいであること","アームが動かないこと","照明がショット01の部屋と一致すること"]}
+];
+
+const VO_FULL = SHOTS.map(s=>s.vo).join("\n\n");
+const MUSIC = `45-second instrumental for a premium robotics product film. Minimal, precise, cinematic electronic. 96 BPM. Clean pulsing synth arpeggio, deep warm sub bass, crisp mechanical percussion ticks, airy pads, no vocals.
+Structure: 0:00 to 0:05 near silence, a low drone swells as lights come on. 0:05 soft kick and arpeggio enter. 0:11 to 0:29 steady build, adding glassy plucks and tighter percussion. 0:29 to 0:35 tension lifts with a rising filter sweep. 0:35 full but restrained peak. 0:40 everything drops to a sustained pad with one deep low hit. Clean ending at 0:45, no fade-out tail longer than 2 seconds.
+Mood: confident, clinical, sophisticated, high-tech. Leave space in the mid range for a spoken voiceover.`;
+const SFX = [
+  ["電源投入","リレーのクリックが順に鳴り、電気的なハム音、上昇するトーン","01"],
+  ["サーボの動き","滑らかで精密なロボットサーボのうなり、静か","02, 05, 06, 07"],
+  ["ツールロック","磁気的なガチャンという音と短い電子音","03"],
+  ["レーザー","高周波のレーザーのヒス音と細かいパチパチ音","04"],
+  ["スキャン","柔らかく掃引するサイントーン、穏やか","06"],
+  ["UIのティック音","各仕様コールアウトの下に、とても柔らかいデジタルのティック音","03から07（オーバーレイのタイミング）"],
+  ["エンドヒット","単発の深い映画的な低音ブーム、短い余韻","08"]
+];
+
+const STEPS = [
+  {id:"overview", grp:"計画", label:"概要"},
+  {id:"setup", grp:"計画", label:"Flowのセットアップ"},
+  {id:"refs", grp:"画像", label:"リファレンス画像"},
+  ...SHOTS.map(s=>({id:"shot"+s.n, grp:"Shots", label:s.n+" "+s.name, tc:s.tc.split(" to ")[0], shot:s})),
+  {id:"vo", grp:"音声", label:"ナレーション"},
+  {id:"music", grp:"音声", label:"音楽とサウンド"},
+  {id:"overlays", grp:"組み立て", label:"オーバーレイとブランド"},
+  {id:"handoff", grp:"組み立て", label:"引き継ぎチェックリスト"}
+];
+
+let done = {};
+try{ done = JSON.parse(localStorage.getItem("arc7-done")||"{}") }catch(e){ done = {} }
+function saveDone(){ try{ localStorage.setItem("arc7-done", JSON.stringify(done)) }catch(e){} }
+
+const esc = s => String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let promptStore = [];
+function promptBox(title, sub, text){
+  const i = promptStore.push(text) - 1;
+  return `<div class="prompt"><div class="ph"><b>${esc(title)}${sub?`<small>${esc(sub)}</small>`:""}</b><button class="copy" data-copy="${i}">コピー</button></div><pre id="p${i}">${esc(text)}</pre></div>`;
+}
+const refName = id => REFS.find(r=>r.id===id);
+
+function renderStep(id){
+  promptStore = [];
+  const idx = STEPS.findIndex(s=>s.id===id);
+  const st = STEPS[idx];
+  let h = "";
+  if(id==="overview"){
+    h += `<p class="eyebrow">ステップ0 · 計画</p><h2>コンセプト実証ロボットのための45秒の製品フィルム</h2>
+    <p class="lede">ORIVEX ARC-7は、コンセプト実証のための7軸精密加工アームです。このフィルムでは、清潔な白いラボで1つのオブジェクトを最初から最後まで作る様子を見せます。パワーアップ、リビール、ツール交換、レーザーエッチング、微小配置、自己検査、完成品、エンドカードです。FlowとSpeechifyに貼り付けるために必要なものはすべて、次のページにあります。</p>
+    <div class="specs"><div><b>45 s</b><span>最終的な長さです。7つの技術的なビートには十分な長さで、LinkedInの自動再生には十分に短い長さです。</span></div><div><b>8ショット</b><span>8秒のFlowクリップとして生成し、それぞれ5から6秒にカットします。</span></div><div><b>16:9 · 1080p</b><span>マスター形式です。9:16と1:1のカットダウンを同じプロジェクトからレンダリングできます。</span></div><div><b>4つのリファレンス</b><span>ロボット、手首、ラボ、オブジェクトの画像が、すべてのショットの一貫性を保ちます。</span></div></div>
+    <div class="panel"><h3>タイムライン</h3><div class="scroll"><div class="timeline">${SHOTS.map(s=>`<button class="seg" style="flex:${s.dur}" data-go="shot${s.n}"><small>${s.tc.split(" to ")[0]}</small><strong>${s.n} ${esc(s.name)}</strong><em>${esc(s.vo)}</em></button>`).join("")}</div></div></div>
+    <div class="panel"><h3>各要素のつながり</h3><div class="flow">
+      <div class="node"><div class="who">あなた · Flow</div><b>リファレンス画像</b><span>ロボット、手首、ラボ、オブジェクトです。一度生成し、あらゆる場面で再利用します。</span></div>
+      <div class="node"><div class="who">あなた · Flow</div><b>8つのキーフレーム</b><span>ショットごとに1枚の静止画を、リファレンスを添付して作成します。</span></div>
+      <div class="node"><div class="who">あなた · Flow</div><b>8つの動画クリップ</b><span>各キーフレームを、そのモーションプロンプトでアニメーション化します。</span></div>
+      <div class="node"><div class="who">あなた · Speechify + 音楽ツール</div><b>音声</b><span>8つのナレーションと1つの45秒の音楽ベッドです。</span></div>
+      <div class="node me"><div class="who">Claude · HyperFrames</div><b>組み立て</b><span>編集、オーバーレイ、ブランドマーク、HUD、キャプション、ミックス、レンダリングです。</span></div>
+    </div></div>
+    <div class="grid2">
+      <div class="panel"><h3>ブランドマークをFlowに入れない理由</h3><p style="margin:0">AI動画モデルは文字やロゴを崩してしまいます。画面上のすべての単語、数字、ロゴは、後でHyperFramesできれいなオーバーレイとして追加します。そのため、すべてのFlowプロンプトには「no text, no logos」と書かれています。</p></div>
+      <div class="panel"><h3>意図的なフィクションです</h3><p style="margin:0">Orivex、ARC-7、台本のすべての仕様は、このモックアップのために作られたものです。このフィルムを公開する場合は、まず名前を検索し、実在の会社のものではないことを確認してください。</p></div>
+    </div>`;
+  }
+  else if(id==="setup"){
+    h += `<p class="eyebrow">ステップ1 · 生成の前に</p><h2>Flowとフォルダをセットアップします</h2>
+    <p class="lede">10分のセットアップで、再生成の手間を大きく減らせます。Flowのインターフェースは頻繁に変わるため、ボタンの名前がここに書かれたものと少し違う場合があります。</p>
+    <div class="grid2">
+      <div class="panel"><h3>Flowの設定</h3><ul class="clean">
+        <li><b>ORIVEX ARC-7</b>という新しいFlowプロジェクトを作成します。</li>
+        <li>アスペクト比はすべて<b>16:9</b>にします。画像も動画も同じです。</li>
+        <li>画像：Flowの画像生成（またはGemini）を使い、すべてのリファレンスをプロジェクト内に保持して、イングリーディエントとして添付できるようにします。</li>
+        <li>動画：ショットのキーフレームを開始フレームとして、<b>Frames to Video</b>を使います。</li>
+        <li><b>ショットごとのモデル。</b>Omni 1.1 Flashは安くて速く、部屋、光、カメラの動きが得意ですが、関節を動かすロボットは苦手です。ショット01、07、08と、あらゆるものの360pの下書きに使います。アームが動くショット（02、03、04、05、06）では、プランに含まれていれば、決定版にVeo 3.1 Qualityを使います。Omniを使い続ける場合は、それらのショットに開始フレームと終了フレームの両方を与え、アニメーションプロンプトの末尾に「One continuous, unbroken shot, no cuts.」を追加します。</li>
+        <li>プロンプトごとに2から4つのバリエーションを生成し、最良のものを残します。</li>
+        <li>クリップの長さ：モデルに応じて8から10秒です。編集ではそれぞれ5から6秒を使い、余った秒数が最もきれいな動きでカットする余裕を与えます。</li>
+      </ul></div>
+      <div class="panel"><h3>フォルダとファイル名</h3><p style="margin:0 0 10px">コンピューターにフォルダを1つ作り、組み立てが自動になるように、ファイルに正確に次の名前を付けます。</p>
+<pre style="margin:0;font:13px/1.7 var(--f-mono);white-space:pre-wrap">ORIVEX ARC-7/
+  refs/    R1_arc7_hero.png  R2_arc7_wrist.png
+           R3_lab_plate.png  R4_lattice_sphere.png
+  frames/  S01.png ... S08.png
+  clips/   S01.mp4 ... S08.mp4
+  audio/   VO_01.mp3 ... VO_08.mp3
+           music.mp3  (optional: sfx/)</pre></div>
+    </div>
+    <div class="panel"><h3>一貫性の3つのルール</h3><ol class="clean">
+      <li><b>ロボットの説明を決して編集しないでください。</b>このガイドのすべてのプロンプトには、同じARC-7の段落が一字一句含まれています。プロンプトは全体をコピーし、入力し直さないでください。</li>
+      <li><b>指定されたリファレンスを必ず添付してください。</b>各ショットのページに、R1からR4のどれをイングリーディエントとして追加するかが書かれています。</li>
+      <li><b>ずれは早めに却下してください。</b>キーフレームのアームの形や色が違う場合は、静止画を再生成します。動画で直すのははるかに困難です。</li>
+    </ol></div>`;
+  }
+  else if(id==="refs"){
+    h += `<p class="eyebrow">ステップ2 · 見た目を固定します</p><h2>4つのリファレンス画像を生成します</h2>
+    <p class="lede">まずこれらを作成し、R1に満足するまで次に進まないでください。R1はフィルム全体を通したロボットのアイデンティティです。</p>`;
+    REFS.forEach(r=>{
+      h += `<div class="panel" style="display:flex;flex-direction:column;gap:14px"><div style="display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;justify-content:space-between"><h3 style="margin:0">${r.id} · ${esc(r.name)}</h3><span class="chip">${r.file}</span></div><p style="margin:0;color:var(--muted)">${esc(r.why)}</p>${promptBox("画像プロンプト","Flowの画像生成に貼り付けます。16:9",r.prompt)}<div><h4 style="font:600 12px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 6px">次の条件を満たせば採用します</h4><ul class="clean">${r.check.map(c=>`<li>${esc(c)}</li>`).join("")}</ul></div></div>`;
+    });
+  }
+  else if(st.shot){
+    const s = st.shot;
+    h += `<p class="eyebrow">ショット ${s.n} · ${s.tc} · 編集では ${s.dur} 秒</p><h2>${esc(s.name)}</h2><p class="lede">${esc(s.purpose)}</p>
+    <div class="panel" style="display:flex;flex-direction:column;gap:8px"><h4 style="font:600 12px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0">Flowでこれらのリファレンスを添付してください</h4><div class="chips">${s.refs.map(r=>`<span class="chip amber">${r} · ${esc(refName(r).name)}</span>`).join("")}</div></div>
+    ${promptBox("A · キーフレーム画像プロンプト","結果を frames/S"+s.n+".png として保存します",s.image)}
+    ${s.endImage ? promptBox("B · 終了フレーム画像プロンプト","編集する画像として S"+s.n+".png を添付します。結果を frames/S"+s.n+"_end.png として保存します",s.endImage) : ""}
+    ${promptBox((s.endImage?"C":"B")+" · Animation prompt", s.endImage ? "Frames to Video：開始フレーム S"+s.n+".png、終了フレーム S"+s.n+"_end.png。clips/S"+s.n+".mp4 として保存します" : "Frames to Video、開始フレーム S"+s.n+".png。clips/S"+s.n+".mp4 として保存します",s.anim)}
+    ${s.alt ? `<div class="panel"><h3>形が変わり続ける場合は</h3><ul class="clean">${s.alt.map(a=>`<li><b>${esc(a[0])}.</b> ${esc(a[1])}</li>`).join("")}</ul></div>` : ""}
+    <div class="panel meta">
+      <div><h4>ナレーション</h4><p class="vo">${esc(s.vo)}</p></div>
+      <div><h4>オーバーレイ（HyperFramesで追加）</h4><p>${esc(s.overlay)}</p></div>
+      <div><h4>次の条件を満たせばクリップを採用します</h4><ul class="clean">${s.check.map(c=>`<li>${esc(c)}</li>`).join("")}</ul></div>
+    </div>`;
+  }
+  else if(id==="vo"){
+    h += `<p class="eyebrow">ステップ11 · Speechify</p><h2>ナレーションを録音します</h2>
+    <p class="lede">45秒で80語にすると、映像と音楽が息づく余地が生まれます。各セリフを個別のファイルとして書き出し、そのショットに正確に配置できるようにします。</p>
+    <div class="grid2">
+      <div class="panel"><h3>声のディレクション</h3><ul class="clean">
+        <li>声：落ち着いた低めから中くらいの声域で、ドキュメンタリーや高級テクノロジーのナレーターのようにします。男性でも女性でも構いません。明るい調子や「アナウンサー」風は避けます。</li>
+        <li>速度は約0.9倍です。会話より少し遅くします。</li>
+        <li>句点は意図的です。「Every pass. Every part.」は2つの短いビートとして届くようにします。</li>
+        <li>「ARC-7」は「arc seven」、「Orivex」は「OR-ih-vex」と読みます。Speechifyが読み間違える場合は、音の通りにタイプします。<b>Arc Seven</b>、<b>Orrivex</b>です。</li>
+        <li>MP3またはWAVで書き出し、セリフごとに1ファイルにします。VO_01からVO_08です。</li>
+      </ul></div>
+      <div class="panel"><h3>タイミング</h3><div class="scroll"><table><thead><tr><th>ファイル</th><th>開始</th><th>セリフ</th></tr></thead><tbody>${SHOTS.map(s=>`<tr><td class="tc">VO_${s.n}</td><td class="tc">${s.tc.split(" to ")[0]}</td><td>${esc(s.vo)}</td></tr>`).join("")}</tbody></table></div><p class="note" style="margin:12px 0 0">各セリフは、そのショットのカットの約0.5秒後に始まります。セリフが長くなっても問題ありません。HyperFramesが声ではなくカットを調整します。</p></div>
+    </div>
+    ${promptBox("台本全文","Speechifyに貼り付け、セリフごとに分割するか、セリフを個別に書き出します",VO_FULL)}`;
+  }
+  else if(id==="music"){
+    h += `<p class="eyebrow">ステップ12 · 音楽ベッドとサウンド</p><h2>音楽とサウンドデザイン</h2>
+    <p class="lede">以下のプロンプトは、ほとんどのAI音楽ツール（Suno、Udio、ElevenLabs Music、Googleの音楽ツール）で使えます。Flowクリップには生成された効果音も含まれており、それはアニメーションプロンプトがすでに求めています。</p>
+    ${promptBox("音楽プロンプト","いくつかのバージョンを生成し、終わり方が最もきれいなものを残します",MUSIC)}
+    <div class="panel"><h3>効果音</h3><p style="margin:0 0 10px;color:var(--muted)">Flowクリップの音声を残します。音楽の下に低いレベルで配置されます。クリップの音が良くない場合は、次の効果音に置き換えます。</p><div class="scroll"><table><thead><tr><th>効果</th><th>説明</th><th>ショット</th></tr></thead><tbody>${SFX.map(r=>`<tr><td><b>${esc(r[0])}</b></td><td>${esc(r[1])}</td><td class="tc">${esc(r[2])}</td></tr>`).join("")}</tbody></table></div></div>
+    <div class="panel"><h3>目標のミックス</h3><ul class="clean"><li>ナレーションを一番上に置き、常にはっきり聞こえるようにします。</li><li>音楽は各ナレーションの下で約8 dB下がります。</li><li>Flowの効果音は低くし、聞くというより感じる程度にします。ただし、ツールロックのガチャンという音とエンドヒットは例外です。</li></ul></div>`;
+  }
+  else if(id==="overlays"){
+    h += `<p class="eyebrow">ステップ13 · ClaudeがHyperFramesで構築します</p><h2>オーバーレイとブランド</h2>
+    <p class="lede">このページのものは、どれもFlowで作る必要はありません。HyperFramesのコンポジションできれいなベクターグラフィックスとして描かれ、すべての数字と文字が鮮明になります。</p>
+    <div class="mark-preview">
+      <div class="tile light"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="17" fill="none" stroke="#14181B" stroke-width="3.2" stroke-dasharray="80 27" transform="rotate(-50 24 24)"/><circle cx="37.6" cy="13.6" r="4.2" fill="#D9670A"/></svg><div><div class="wm">ORIVEX</div><div class="sub">ROBOTICS</div></div></div>
+      <div class="tile dark"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="17" fill="none" stroke="#F4F5F5" stroke-width="3.2" stroke-dasharray="80 27" transform="rotate(-50 24 24)"/><circle cx="37.6" cy="13.6" r="4.2" fill="#FF8A1F"/></svg><div><div class="wm">ORIVEX</div><div class="sub">ARC-7</div></div></div>
+    </div>
+    <p class="note" style="margin:0">コンセプトマーク：アームのリーチを表す開いたオービットアークと、ツール先端を表すアンバーの点です。アンバーはロボットのライトリングと一致します。</p>
+    <div class="panel"><h3>オーバーレイ一覧</h3><div class="scroll"><table><thead><tr><th>ショット</th><th>オーバーレイ</th></tr></thead><tbody>${SHOTS.map(s=>`<tr><td class="tc">${s.n}</td><td>${esc(s.overlay)}</td></tr>`).join("")}</tbody></table></div></div>
+    <div class="panel"><h3>グラフィックスタイル</h3><ul class="clean">
+      <li>書体：ラベルにはコンデンスドな技術的サンセリフ、数字と表示にはモノスペースを使います。</li>
+      <li>色：白とグラファイトを使い、アンバーはライブ値とブランドの点にだけ使います。</li>
+      <li>動き：コールアウトは0.4秒で引き出し線とともに描かれ、数字はカウントアップし、すべて0.25秒で消えます。バウンスは使いません。</li>
+      <li>ショット02から07まで、隅に小さなバグを常時表示します。不透明度は70%です。</li>
+      <li>LinkedInでの無音自動再生用に、焼き込みキャプションを任意で付けます。</li>
+    </ul></div>`;
+  }
+  else if(id==="handoff"){
+    h += `<p class="eyebrow">ステップ14 · Claudeへ戻します</p><h2>引き継ぎチェックリスト</h2>
+    <p class="lede">以下のすべてにチェックが入ったら、フォルダをClaudeと共有し（デスクトップアプリで接続するか、ファイルを添付します）、「assemble ARC-7」と伝えます。</p>
+    <div class="panel"><ul class="clean" style="list-style:none;padding:0;gap:10px">
+      ${["refs/ に4つのリファレンス画像（オーバーレイの色合わせに役立ちます）","clips/ に8つのクリップ、名前はS01.mp4からS08.mp4、すべて16:9","audio/ に8つのナレーションファイル、名前はVO_01からVO_08","audio/ に music.mp3","満足できなかったクリップがあれば、何が問題かとともにメモします（Claudeは編集で小さな問題を回避できます）"].map((t,i)=>`<li><label class="done-toggle"><input type="checkbox" id="ho${i}" data-ho="${i}" ${done["ho"+i]?"checked":""}> ${esc(t)}</label></li>`).join("")}
+    </ul></div>
+    <div class="panel"><h3>Claudeが次に行うこと</h3><ol class="clean">
+      <li>HyperFramesプロジェクトを構築します。クリップをタイムラインに合わせてトリミングし、色を合わせ、軽いフィルムグレインを加えます。</li>
+      <li>ブランドマーク、タイトル、仕様コールアウト、検査HUD、エンドカードを追加します。</li>
+      <li>ナレーションを配置し、ダッキング付きで音楽と効果音をミックスします。</li>
+      <li>レビュー用に720pの下書きをレンダリングし、次に1080pのマスターをレンダリングします。</li>
+      <li>任意：9:16と1:1のバージョンと、キャプション付きカットを作成します。</li>
+    </ol></div>`;
+  }
+  // footer
+  const prev = STEPS[idx-1], next = STEPS[idx+1];
+  h += `<div class="foot"><button class="btn" ${prev?`data-go="${prev.id}"`:"disabled"}>← ${prev?esc(prev.label):"開始"}</button>
+    <label class="done-toggle"><input type="checkbox" id="done-${id}" data-done="${id}" ${done[id]?"checked":""}> このステップを完了にする</label>
+    <button class="btn primary" ${next?`data-go="${next.id}"`:"disabled"}>${next?esc(next.label):"完了"} →</button></div>`;
+  document.getElementById("main").innerHTML = `<section class="step">${h}</section>`;
+  renderRail(id);
+  try{ history.replaceState(null,"","#"+id) }catch(e){}
+  try{ localStorage.setItem("arc7-step", id) }catch(e){}
+}
+
+function renderRail(active){
+  let g="", h="";
+  STEPS.forEach(s=>{
+    if(s.grp!==g){ g=s.grp; h+=`<div class="grp">${g}</div>`; }
+    h += `<button data-go="${s.id}" class="${done[s.id]?"done":""}" ${s.id===active?'aria-current="step"':""}><span class="dot"></span>${esc(s.label)}${s.tc?`<span class="tc">${s.tc}</span>`:""}</button>`;
+  });
+  document.getElementById("rail").innerHTML = h;
+  const n = STEPS.filter(s=>done[s.id]).length;
+  document.getElementById("progTxt").textContent = `${n} / ${STEPS.length} 完了`;
+  document.getElementById("progBar").style.width = (n/STEPS.length*100)+"%";
+}
+
+document.addEventListener("click", e=>{
+  const go = e.target.closest("[data-go]");
+  if(go && !go.disabled){ renderStep(go.dataset.go); window.scrollTo({top:0,behavior:"smooth"}); return; }
+  const cp = e.target.closest("[data-copy]");
+  if(cp){
+    const i = +cp.dataset.copy, text = promptStore[i];
+    const ok = ()=>{ cp.textContent="コピーしました"; cp.classList.add("ok"); setTimeout(()=>{cp.textContent="コピー";cp.classList.remove("ok")},1600); };
+    const fallback = ()=>{ const el=document.getElementById("p"+i); const r=document.createRange(); r.selectNodeContents(el); const sel=getSelection(); sel.removeAllRanges(); sel.addRange(r); cp.textContent="選択しました。Ctrl+Cを押してください"; };
+    try{ navigator.clipboard.writeText(text).then(ok, fallback) }catch(err){ fallback() }
+  }
+});
+document.addEventListener("change", e=>{
+  const d = e.target.dataset;
+  if(d.done){ done[d.done]=e.target.checked; saveDone(); renderRail(d.done); }
+  if(d.ho!==undefined){ done["ho"+d.ho]=e.target.checked; saveDone(); }
+});
+
+let start = "overview";
+const hash = (location.hash||"").slice(1);
+let stored = null; try{ stored = localStorage.getItem("arc7-step") }catch(e){}
+if(STEPS.some(s=>s.id===hash)) start = hash; else if(stored && STEPS.some(s=>s.id===stored)) start = stored;
+renderStep(start);
+</script>
+
+</body></html>

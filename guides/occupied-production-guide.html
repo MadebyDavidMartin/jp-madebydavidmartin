@@ -1,0 +1,578 @@
+<!doctype html><html lang="ja"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Occupied</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&family=Courier+Prime&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>html{--sans:"Noto Sans JP","Geist","Segoe UI",system-ui,-apple-system,sans-serif}</style>
+<style>
+/* Layout: a film production book. Sticky section rail with live progress on wide screens, one column on phones. Shot cards carry copyable prompts and a Done box. Deliberately single dark look, like a screening room. */
+:root{
+  --ink:#0D1012; --panel:#151A1D; --panel2:#1B2226; --line:#2A3338; --paper:#E8E3D9; --muted:#97A3A6;
+  --rust:#D0642F; --rustsoft:#3A2117; --teal:#7FA3A3; --ok:#9CC3A0;
+  --display:"Cormorant Garamond","Times New Roman",serif; --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace; --script:"Courier Prime","Courier New",monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--ink);color:var(--paper);font-family:var(--body);font-size:16px;line-height:1.6}
+a{color:var(--rust)}
+.wrap{max-width:1200px;margin:0 auto;padding-inline:20px;padding-block:28px 96px;display:grid;grid-template-columns:210px minmax(0,1fr);gap:44px}
+nav{position:sticky;top:calc(env(safe-area-inset-top,0px) + 20px);align-self:start;display:flex;flex-direction:column;gap:2px;font-size:14px}
+nav a{color:var(--paper);text-decoration:none;padding:6px 10px;border-radius:6px}
+nav a:hover,nav a:focus-visible{background:var(--panel2);outline:none}
+nav .prog{font-family:var(--mono);font-size:12px;color:var(--muted);padding:10px 10px 4px}
+nav .bar{height:3px;background:var(--line);margin:0 10px 12px;border-radius:2px;overflow:hidden}
+nav .bar i{display:block;height:100%;width:0;background:var(--rust);transition:width .3s}
+main{min-width:0;display:flex;flex-direction:column;gap:64px}
+.hero{border:1px solid var(--line);background:#07090A;border-radius:4px;overflow:hidden}
+.scope{aspect-ratio:2.39/1;max-width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:radial-gradient(ellipse at 50% 60%,#1d2a2d 0%,#090c0d 70%);text-align:center;padding:16px}
+.scope .k{font-family:var(--mono);font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--muted)}
+.scope h1{font-family:var(--display);font-weight:300;font-size:clamp(40px,8vw,92px);letter-spacing:.42em;margin:0 0 0 .42em;line-height:1}
+.scope .ts{font-family:var(--mono);font-size:12px;color:var(--rust);letter-spacing:.12em}
+.hero .meta{padding:22px 24px;display:flex;flex-direction:column;gap:14px}
+.logline{font-family:var(--display);font-size:clamp(20px,2.4vw,26px);line-height:1.35;margin:0;max-width:60ch;font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:var(--mono);font-size:12px;padding:4px 10px;border-radius:3px;border:1px solid var(--line);color:var(--paper)}
+.chip.r{border-color:var(--rust);color:var(--rust)}
+section h2{font-family:var(--display);font-weight:500;font-size:34px;letter-spacing:.01em;margin:0 0 4px;text-wrap:balance}
+section > p.lead{margin:0 0 22px;color:var(--muted);max-width:70ch}
+h3{font-family:var(--body);font-weight:600;font-size:16px;margin:0}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px 20px;min-width:0}
+.panel ul,.panel ol{margin:8px 0 0;padding-left:18px}
+.panel li{margin:4px 0}
+.act{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--rust)}
+/* checklist */
+.phase{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px 20px;min-width:0}
+.phase h3{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.phase h3 span{font-family:var(--mono);font-size:12px;color:var(--muted);font-weight:400}
+.who{font-family:var(--mono);font-size:11px;padding:1px 7px;border-radius:3px;border:1px solid var(--line);color:var(--muted);margin-left:6px;white-space:nowrap}
+.who.d{border-color:var(--teal);color:var(--teal)}.who.c{border-color:var(--rust);color:var(--rust)}
+.steps{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:2px}
+.steps label{display:flex;gap:10px;align-items:flex-start;padding:6px 4px;border-radius:4px;cursor:pointer}
+.steps label:hover{background:var(--panel2)}
+input[type=checkbox]{accent-color:var(--rust);width:16px;height:16px;margin-top:4px;flex:none}
+input[type=checkbox]:focus-visible{outline:2px solid var(--rust);outline-offset:2px}
+.steps input:checked + span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line)}
+/* screenplay */
+.screenplay{background:#F1ECE1;color:#1a1a1a;border-radius:4px;padding:32px clamp(16px,6vw,72px);font-family:var(--script);font-size:15px;line-height:1.5;max-width:780px;overflow-x:auto}
+.screenplay .sl{font-weight:700;text-transform:uppercase;margin:22px 0 8px}
+.screenplay .ac{margin:0 0 12px}
+.screenplay .ch{margin:12px 0 0 38%;text-transform:uppercase}
+.screenplay .pa{margin:0 0 0 30%;}
+.screenplay .di{margin:0 18% 10px 22%}
+.screenplay .tr{text-align:right;text-transform:uppercase;margin:12px 0}
+.screenplay .sc{font-size:12px;color:#7a6e5d}
+/* cards */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.card-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.tc{font-family:var(--mono);font-size:12px;color:var(--rust);font-weight:600;font-variant-numeric:tabular-nums}
+.model{font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:3px;background:var(--panel2);color:var(--teal)}
+.card-head label{margin-left:auto;font-size:13px;display:flex;gap:6px;align-items:center;color:var(--muted);cursor:pointer}
+.card-head label input{margin-top:0}
+.why{margin:0;color:var(--muted);font-size:14.5px;max-width:74ch}
+.attach{font-size:13.5px;color:var(--muted);margin:0}
+.attach b{color:var(--paper);font-weight:600}
+.line{font-family:var(--script);font-size:14.5px;background:var(--rustsoft);border-radius:4px;padding:8px 12px;color:var(--paper)}
+.line b{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--rust);font-weight:600;margin-right:8px}
+.prompt{border:1px solid var(--line);border-radius:5px;background:#0F1416;min-width:0}
+.prompt .pbar{display:flex;align-items:center;gap:10px;padding:7px 10px 7px 14px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--muted);flex-wrap:wrap}
+.prompt .pbar .tag{color:var(--paper);font-weight:600}
+.prompt .pbar button{margin-left:auto}
+.prompt pre{margin:0;padding:12px 14px;white-space:pre-wrap;word-wrap:break-word;font-family:var(--mono);font-size:12.5px;line-height:1.6;color:#D6D2C8}
+button.copy{font-family:var(--mono);font-size:12px;border:1px solid var(--line);background:var(--panel2);color:var(--paper);border-radius:4px;padding:3px 10px;cursor:pointer}
+button.copy:hover{border-color:var(--rust)}
+button.copy:focus-visible{outline:2px solid var(--rust);outline-offset:2px}
+button.copy.ok{background:var(--ok);color:#0D1012;border-color:var(--ok)}
+.note{font-size:14px;border-left:2px solid var(--rust);padding:2px 0 2px 12px;margin:0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+td.t{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--rust)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+.tablewrap table{min-width:640px}
+.ov{background:#000;border-radius:4px;aspect-ratio:2.39/1;max-width:100%;position:relative;overflow:hidden;margin-top:10px}
+.ov .stamp{position:absolute;left:5%;bottom:12%;font-family:var(--mono);font-size:12px;color:#d9d4c8;letter-spacing:.14em;opacity:.8}
+.ov .notif{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(40,44,46,.92);border-radius:12px;padding:9px 14px;font-size:13px;color:#eee;min-width:min(240px,80%)}
+.ov .notif small{display:block;color:#aaa;font-size:11px}
+.ov .tt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:300;letter-spacing:.42em;font-size:clamp(20px,4vw,34px);color:#e8e3d9}
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)} nav{display:none} .grid2,.grid3{grid-template-columns:minmax(0,1fr)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+<nav aria-label="セクション">
+  <div class="prog" id="prog">0 / 0 完了</div><div class="bar"><i id="progbar"></i></div>
+  <a href="#steps">制作ステップ</a><a href="#story">ストーリー</a><a href="#script">脚本</a><a href="#look">ルック</a><a href="#cast">キャストと場所</a><a href="#refs">リファレンス</a><a href="#shots">ショット</a><a href="#voice">ボイスプラン</a><a href="#score">スコアとサウンド</a><a href="#edit">編集とオーバーレイ</a><a href="#files">フォルダと命名規則</a>
+</nav>
+<main>
+
+<header class="hero" id="top">
+  <div class="scope"><span class="k">短編映画 · 90秒</span><h1>OCCUPIED</h1><span class="ts">3:12 AM</span></div>
+  <div class="meta">
+    <p class="logline">睡眠不足の大学生が、見知らぬ誰かが自分の机に座っている夢を繰り返し見ます。今日、彼は家に帰り、ドアを開けます。</p>
+    <div class="chips"><span class="chip r">90 s</span><span class="chip">仕上げ 16:9の中に2.39:1</span><span class="chip">24 fps · 1080p</span><span class="chip">Flow: Omni Flash</span><span class="chip">Speechify</span><span class="chip">Suno</span><span class="chip">HyperFramesで編集</span><span class="chip">ファイル接頭辞 OCC_</span></div>
+  </div>
+</header>
+
+<section id="steps">
+  <h2>制作ステップ</h2>
+  <p class="lead">作業全体を順番に並べています。チェックはこのブラウザにのみ保存されます。下のリファレンスカードとショットカードにもそれぞれ完了チェックがあります。左のカウンターはすべてを集計します。</p>
+  <div style="display:flex;flex-direction:column;gap:14px" id="phaseList"></div>
+</section>
+
+<section id="story">
+  <h2>ストーリー</h2>
+  <p class="lead">あなたの骨格から組み立てました。加えたのは、エンディングでショットごとに繰り返されるコールドオープン、現実のものになる夢のタイムスタンプ、最後の瞬間まで後ろ姿しか見せないダブル、そして観客に問いを残す最後のスマホ通知です。</p>
+  <div class="grid2">
+    <div class="panel"><span class="act">コールドオープン · 0から12秒</span><h3 style="margin-top:6px">夢</h3><p>夜。一人称視点。寮のドアが開きます。モニターの光の中、誰かが机に座り、こちらに背を向けています。椅子が回ります。それはEliでした。暗転。タイトル。</p></div>
+    <div class="panel"><span class="act">第一幕 · 12から36秒</span><h3 style="margin-top:6px">カフェ</h3><p>夕方近く、窓には雨。EliはMayaに、夢がまた戻ってきたと話します。彼女は優しく、現実的です。彼はほとんど眠れていません。外で、彼女は自分の寮へ向かいます。「Text me when you're home.」</p></div>
+    <div class="panel"><span class="act">第二幕 · 36から61秒</span><h3 style="margin-top:6px">帰り道</h3><p>Eliは考え事をしながらキャンパスを歩いて帰ります。人混みの中、横断歩道、寮の階段、階段室で、他の若者たちが彼とまったく同じ服を着ています。顔はいつもそっぽを向いています。彼は決して気づきません。観客は気づくかもしれません。</p></div>
+    <div class="panel"><span class="act">第三幕 · 61から90秒</span><h3 style="margin-top:6px">ドア</h3><p>彼は自分のドアの前でためらいます。ドアは夢とまったく同じように開きます。今度は昼間です。椅子が回ります。それは彼自身でした。「You're early.」彼はよろめいて下がり、助けを求めてドアを叩きます。どのドアも彼自身が開けます。苛立った顔で、食べながら、電話をしながら。そしてすべてのドアが一斉に開きます。暗転。スマホが鳴ります。「home yet?」</p></div>
+  </div>
+  <div class="grid3" style="margin-top:16px">
+    <div class="panel"><h3>映画祭で通用する理由</h3><ul><li>一つの明確なアイデアを、三度エスカレートさせます。</li><li>オープニングとエンディングが呼応します。</li><li>説明はありません。観客が自分で組み立てます。</li></ul></div>
+    <div class="panel"><h3>AIに向いている理由</h3><ul><li>一つの顔を至る所で使い回すことが、リスクではなく映画の主題そのものになります。</li><li>ダブルを後ろ姿にすることで、一つのフレームに二つの顔が入る事態を避けます。</li><li>セリフは短く、大半はカバレッジで処理します。</li></ul></div>
+    <div class="panel"><h3>錆色のオーバーシャツ</h3><ul><li>Eliは、寒色のティールグレードの中で唯一の暖色を身に着けています。</li><li>観客が人混みの中でその色に気づいた瞬間から、錆オレンジの形はすべて脅威になります。</li></ul></div>
+  </div>
+</section>
+
+<section id="script">
+  <h2>脚本</h2>
+  <p class="lead">セリフは全部で12行です。シーン番号はショットカードと対応しています。</p>
+  <div class="screenplay">
+    <p class="sl">コールドオープン。内景。Eliの寮の部屋。夜 <span class="sc">(S01 to S03)</span></p>
+    <p class="ac">一人称視点。ドアが開きます。モニターの光。机に人影、こちらに背を向けています。椅子が回ります。ELI（21）がレンズを見つめます。無表情です。</p>
+    <p class="tr">暗転へスマッシュカット。</p>
+    <p class="ac" style="text-align:center">OCCUPIED</p>
+    <p class="sl">内景。キャンパスカフェ。夕方近く <span class="sc">(S04 to S08)</span></p>
+    <p class="ac">窓には雨。ELIとMAYA（21）が窓際のテーブルにいます。Eliはカップを持ったまま飲みません。</p>
+    <p class="ch">Eli</p><p class="di">I had it again. The dream.</p>
+    <p class="ch">Maya</p><p class="di">The room one?</p>
+    <p class="ac">彼はうなずきます。</p>
+    <p class="ch">Eli</p><p class="di">I open the door, and someone's at my desk. He turns around...</p><p class="pa">（間）</p><p class="di">And it's me.</p>
+    <p class="ac">Mayaが手を伸ばし、彼の手に自分の手を重ねます。</p>
+    <p class="ch">Maya</p><p class="di">Hey. It's a dream. You've barely slept all week.</p>
+    <p class="ch">Eli</p><p class="pa">（小さく息を吐くような笑い）</p><p class="di">Yeah.</p>
+    <p class="sl">外景。カフェ前。続き <span class="sc">(S09)</span></p>
+    <p class="ch">Maya</p><p class="pa">（歩き去りながら、肩越しに）</p><p class="di">Text me when you're home.</p>
+    <p class="ac">Eliは彼女を見送ります。</p>
+    <p class="sl">外景。キャンパス。夕方近く <span class="sc">(S10 to S14)</span></p>
+    <p class="ac">Eliは歩いて帰ります。学生たちの中に、彼とまったく同じ服を着た若者たちがいます。顔はいつもそっぽを向いています。横断歩道では一人が彼のすぐ隣に立っています。彼は決して気づきません。</p>
+    <p class="sl">内景。学生寮、二階。続き <span class="sc">(S15 to S19)</span></p>
+    <p class="ac">彼のドア。取っ手に手をかけます。ドアを開けます。机に人影、彼に背を向けています。椅子が回ります。それはEliでした。</p>
+    <p class="ac">Eliはドア口で凍りつきます。</p>
+    <p class="ch">ダブル (O.S.)</p><p class="pa">（落ち着いて）</p><p class="di">You're early.</p>
+    <p class="ch">Eli</p><p class="di">No. No, no, no.</p>
+    <p class="sl">内景。廊下。続き <span class="sc">(S20 to S23)</span></p>
+    <p class="ch">Eli</p><p class="pa">（隣のドアを叩きながら）</p><p class="di">Hey! Hey, I need help!</p>
+    <p class="ac">ドアが開きます。ELI、苛立っています。</p>
+    <p class="ch">ダブル</p><p class="di">Seriously?</p>
+    <p class="ac">隣のドア。ELI、カップ麺を持ち、噛みながら、じっと見つめます。さらに隣のドア。ELI、電話を耳に当て、指を一本立てています。</p>
+    <p class="ch">ダブル</p><p class="di">One sec.</p>
+    <p class="ac">廊下のすべてのドアが開きます。どのドアもEliです。全員が彼の方を向きます。明かりが消えます。</p>
+    <p class="tr">暗転。</p>
+    <p class="ac">スマホが鳴ります。通知。「Maya: home yet?」</p>
+  </div>
+</section>
+
+<section id="look">
+  <h2>ルック</h2>
+  <p class="lead">目指すのは広告ではなく長編映画です。本物の肌、動機のある光、レンズの個性、抑制の効いたカメラです。</p>
+  <div class="grid2">
+    <div class="panel"><h3>カメラ</h3><ul>
+      <li>アナモルフィックなルック。楕円形のボケ、実用光源からのみ生じる穏やかな横方向のフレアです。</li>
+      <li>仕上げは2.39:1です。16:9で生成し、頭とアクションを中央の帯に収めます。編集で上下をクロップします。</li>
+      <li>ゆっくりとした意図的な動き。ドリー、プッシュイン、横方向のトラッキングです。手持ちはパニックの場面だけです。</li>
+      <li>廊下では一点対称の構図にし、古典的なホラーのフレーミングを踏襲します。</li>
+    </ul></div>
+    <div class="panel"><h3>グレードと質感</h3><ul>
+      <li>寒色のティールの影、抑えたアンバーの肌、プリントフィルムのコントラストです。</li>
+      <li>錆色のオーバーシャツが唯一の飽和した暖色です。</li>
+      <li>夢は青いモニターの光と深い黒です。現実は曇りの昼光、室内は蛍光灯の緑がかった白です。</li>
+      <li>Claudeが編集で統一したグレイン、ハレーション、レターボックスを加え、すべてのクリップを揃えます。</li>
+    </ul></div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:12px;margin-top:16px" id="styleBoxes"></div>
+</section>
+
+<section id="cast">
+  <h2>キャストと場所</h2>
+  <p class="lead">正規の描写です。キャラクターのテキストは、すべてのショットプロンプトに一字一句そのまま貼り付けます。場所のテキストはリファレンス画像を作るためだけに使います。場所のリファレンスができたら、ショットプロンプトはそれを指すだけにします（「the dorm room from the attached reference image」）。言葉ではなく画像が部屋を決めます。</p>
+  <div style="display:flex;flex-direction:column;gap:12px" id="canonList"></div>
+</section>
+
+<section id="refs">
+  <h2>リファレンス</h2>
+  <p class="lead">まずこれらの画像を16:9で作り、キーフレームの前に承認してください。R1からR3でEliを固定します。ダブルも同じ三つを使います。次に進む前に、Claudeに送って一貫性をチェックしてもらってください。</p>
+  <div id="refList" style="display:flex;flex-direction:column;gap:16px"></div>
+</section>
+
+<section id="shots">
+  <h2>ショット</h2>
+  <p class="lead">生成ショットは24本です。各ショットでは、記載のリファレンスを添付してキーフレーム画像を作り、承認してから、キーフレームを最初のフレームにしてFrames to Videoでアニメーション化します。終了フレームが記載されている場合は、承認済みのキーフレームを編集して作ります。すべてOmni Flashです。Omniは光、部屋、カメラの動きが得意で、手、体、リップシンクは苦手です。そのためショットでは体の動きを小さく抑え、動きはカメラに任せ、話す口は小さく、横顔か画面外にします。使用尺が4秒以下のショットは5秒か6秒のクリップをレンダリングしてください。</p>
+  <div id="shotList" style="display:flex;flex-direction:column;gap:18px"></div>
+</section>
+
+<section id="voice">
+  <h2>ボイスプラン</h2>
+  <p class="lead">Omniでは信頼できるリップシンクも一貫した声も得られないため、映画はその前提で書かれています。すべてのセリフはSpeechifyで録音し、キャラクターごとに声を一つに固定します。大半のセリフは口を合わせる必要のない場所で流れます。ガラス越し、インサートの上、聞き手のカットの上、後ろ姿の上、あるいは距離のある場所です。</p>
+  <div class="grid2">
+    <div class="panel"><h3>進め方</h3><ol>
+      <li><b>Speechifyで二つの声を固定します。</b> Eli用に一つ、Maya用に一つです。すべてのセリフとリテイクで同じ声、速度、設定を使います。声をクローンする場合は、本人の同意がある声だけを使ってください。</li>
+      <li><b>声ごとにマスターファイルを二つ録音します。</b> OCC_VO_ELI（Eliの全セリフとダブルのセリフ、脚本順）とOCC_VO_MAYAです。各セリフを独立した段落にし、セリフの間にはっきりした間を入れます。Claudeが個別のセリフに分割します。</li>
+      <li><b>12行のうち8行はシンクが不要です。</b> カフェの窓、手元、聞いているMaya、Eliの後ろ姿、あるいはダブルが画面外で話す間のEliの顔の上で流れます。</li>
+      <li><b>短い4行は画面の中で話します。</b> 「And it's me.」（横顔）、「No, no, no.」（パニック）、「Seriously?」、「One sec.」です。モーションプロンプトに言葉を含めることで、口の動きがおおよそ合います。Claudeが編集でSpeechifyのテイクを口の動きに合わせます。</li>
+      <li><b>その4行にはそれぞれ代替案があります。</b> ショットカードに書かれているので、口の動きが悪くても映画が止まることはありません。</li>
+      <li><b>Omni自体の音声</b>はセリフの下ではミュートします。Claudeはきれいな環境音だけを残し、残りは構築します。</li>
+    </ol></div>
+    <div class="panel"><h3>ダブルはEliの声で話します</h3><ul>
+      <li>Eliと同じSpeechifyの声です。その同一さが恐怖になります。</li>
+      <li>Claudeはダブルに、Eliよりドライで近い音を与えます。マイクに少し近すぎるような音です。</li>
+      <li>「You're early.」はEliの凍りついた顔の上で聞こえます。ダブルの口では見せません。</li>
+    </ul>
+    <h3 style="margin-top:16px">パニックと呼吸</h3><ul>
+      <li>テキスト読み上げでは「No, no, no」が平板になりがちです。句読点を変えて数テイク試してください（「No. No... no, no!」）。どれも決まらなければ、Claudeが呼吸でセリフを割り、パニックが運びます。</li>
+      <li>呼吸や息切れはサウンドライブラリかOmniのクリップ音声から取ります。Speechifyからは取りません。</li>
+    </ul></div>
+  </div>
+  <div class="tablewrap" style="margin-top:16px"><table>
+    <thead><tr><th>ファイル</th><th>ショット</th><th>話者</th><th>セリフ</th><th>画面</th><th>完了</th></tr></thead>
+    <tbody id="voTable"></tbody></table></div>
+</section>
+
+<section id="score">
+  <h2>スコアとサウンド</h2>
+  <p class="lead">一つのSunoインストゥルメンタルが映画を運びます。三つ生成して最良のものを選び、Claudeが映像に合わせてカットします。効果音がリアリティを与えます。画像と同じくらい重要です。</p>
+  <div style="display:flex;flex-direction:column;gap:12px" id="songList"></div>
+  <div class="grid2" style="margin-top:16px">
+    <div class="panel"><h3>スコアの置き方</h3><ul>
+      <li>コールドオープンはドローンのみです。黒いタイトルカードは無音、その後エスプレッソマシンが私たちをカフェへ連れて行きます。</li>
+      <li>カフェではピアノのモチーフをとても低く、セリフの下に敷きます。</li>
+      <li>帰り道ではチクタクというパルスと高まる弦。通りの音はゆっくりと薄くなっていきます。</li>
+      <li>ドアの場面では不協和音のクライマックスを全開にし、ドアを叩く音をビートに合わせてカットします。</li>
+      <li>消灯では無音へハードカットします。スマホのバイブ音だけです。</li>
+    </ul></div>
+    <div class="panel"><h3>効果音</h3><ul class="steps" id="sfxList" style="margin-top:6px"></ul>
+      <p class="note" style="margin-top:10px">Omni自体の環境音は、きれいな部分を残します。不足分はClaudeが無料のサウンドライブラリから調達できます。あるいはaudio\sfxにファイルを保存してください。</p></div>
+  </div>
+</section>
+
+<section id="edit">
+  <h2>編集とオーバーレイ</h2>
+  <p class="lead">クリップ、ボイス、音楽がフォルダに入ったら、ClaudeがHyperFramesで組み立てます。時間は目標です。カットは演技とスコアに従います。</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>時間</th><th>映像</th><th>音</th><th>オーバーレイ</th></tr></thead>
+    <tbody id="edlTable"></tbody></table></div>
+  <div class="grid3" style="margin-top:16px">
+    <div class="panel"><h3>タイムスタンプ</h3><div class="ov"><span class="stamp">3:12 AM</span></div><p style="font-size:14px;color:var(--muted);margin:10px 0 0">小さな等幅テキスト、左下、低不透明度です。夢には「3:12 AM」、現実のドアに着いたときには「4:47 PM」です。</p></div>
+    <div class="panel"><h3>タイトルカード</h3><div class="ov"><span class="tt">OCCUPIED</span></div><p style="font-size:14px;color:var(--muted);margin:10px 0 0">黒の上に細く、字間を広く取った大文字。コールドオープンの後、無音の中でフェードインします。</p></div>
+    <div class="panel"><h3>最後のフレーム</h3><div class="ov"><div class="notif"><small>Maya · now</small>home yet?</div></div><p style="font-size:14px;color:var(--muted);margin:10px 0 0">黒の上にシンプルなスマホ通知、バイブ音付きです。それ以外は何もありません。</p></div>
+  </div>
+  <div class="grid2" style="margin-top:16px">
+    <div class="panel"><h3>仕上げ</h3><ul>
+      <li>1920x1080のフレームに2.39:1のレターボックスです。</li>
+      <li>すべてのクリップに一つのグレードを適用して揃え、細かいグレインと柔らかなハレーションを加えます。</li>
+      <li>セリフは短期で約-24 LUFS、最終ミックスはオンライン再生向けに統合で約-16 LUFSです。</li>
+      <li>顔やダブルの上にオーバーレイは置きません。</li>
+    </ul></div>
+    <div class="panel"><h3>納品物</h3><ul>
+      <li>OCC_v1_1080p.mp4のマスターとWeb用コピーです。</li>
+      <li>LinkedInとポートフォリオページ用の15秒ティーザーカット（コールドオープンからタイトルへ）です。</li>
+      <li>ポスターフレームはドアの並ぶ廊下です。</li>
+      <li>90秒の後に任意で5秒のクレジットテール。「Written and directed by David Martin」に、AIツールの名前を記した一行を加えます。大半のAI映画祭が求めるものです。</li>
+    </ul></div>
+  </div>
+</section>
+
+<section id="files">
+  <h2>フォルダと命名規則</h2>
+  <p class="lead">Videos\Occupiedに保存してください。厳密な名前によりClaudeが自動で組み立てられます。Flowが追加するタイムスタンプは問題ありません。</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>フォルダ</th><th>入れるもの</th><th>名前</th></tr></thead>
+    <tbody>
+      <tr><td>refs</td><td>リファレンス8点</td><td class="t">OCC_R1_eli.png ... OCC_R8_street.png</td></tr>
+      <tr><td>frames</td><td>承認済みのキーフレームと終了フレーム</td><td class="t">OCC_S01.png, OCC_S03_end.png ...</td></tr>
+      <tr><td>clips</td><td>最終クリップ、Flowが提供する最高解像度</td><td class="t">OCC_S01.mp4 ... OCC_S23.mp4</td></tr>
+      <tr><td>audio\vo</td><td>Speechifyのマスターファイル2点</td><td class="t">OCC_VO_ELI.mp3, OCC_VO_MAYA.mp3</td></tr>
+      <tr><td>audio\music</td><td>選んだSunoトラック（提供されればステムも）</td><td class="t">OCC_SCORE.wav</td></tr>
+      <tr><td>audio\sfx</td><td>追加する効果音</td><td class="t">OCC_SFX_knock.wav ...</td></tr>
+      <tr><td>renders</td><td>Claudeのカット、全バージョンを保持</td><td class="t">OCC_v1_1080p.mp4, OCC_v2 ...</td></tr>
+    </tbody></table></div>
+  <p class="note" style="margin-top:14px">同じ顔の二人が一つのフレームに入ることが、モデルにとって最も難しいことです。このプランはそれを避けています。Eliとダブルがフレームを共有するときは常に、一方を後ろ姿（R3）にします。ショットを作り直す場合も、その原則を守ってください。</p>
+</section>
+</main>
+</div>
+
+<script>
+const C = {
+ ELI:'Eli, a 21-year-old college student: slim build, about 180 cm tall, olive-toned skin, dark brown eyes, medium-length dark brown wavy hair pushed back and slightly messy, light stubble, tired eyes with faint shadows beneath them. He wears a rust-orange corduroy overshirt open over a charcoal grey hoodie, dark indigo straight-leg jeans and white canvas sneakers.',
+ BACK:'a young man seen only from behind, the same height and build as Eli, with the same medium-length dark brown wavy hair, wearing the same rust-orange corduroy overshirt over a charcoal grey hoodie, dark indigo straight-leg jeans and white canvas sneakers',
+ MAYA:'Maya, a 21-year-old college student: auburn hair in a loose low braid with a few loose strands, light freckles, green eyes, natural minimal makeup, a cream cable-knit sweater with the sleeves pushed up, small gold hoop earrings.',
+ CAFE:'a small independent cafe near a university campus in autumn 2026: a large window onto the street with raindrops on the glass, warm pendant bulbs, pale oak tables, white ceramic cups, potted plants, a chrome espresso machine at the back, overcast late-afternoon daylight.',
+ ROOM:'Eli\'s dorm room: a narrow single room with cream-painted cinder-block walls, a plain wooden desk under a window with the blinds half closed, a large computer monitor on the desk, a black mesh office chair, a green-shaded desk lamp, a stack of textbooks with plain spines, a single bed with a grey blanket against the left wall, a few small plain photos pinned above the desk.',
+ HALL:'the second-floor corridor of an older red-brick university residence hall: a long straight corridor, worn speckled linoleum floor, cream cinder-block walls, identical dark wooden doors evenly spaced on both sides, each with a small blank brass plate, fluorescent ceiling panels, a fire door with a narrow window at the far end. Symmetrical one-point perspective.',
+ STREET:'a tree-lined street at the edge of a North American university campus in late October 2026: red-brick academic buildings, maple trees with orange and yellow leaves, pavement damp from earlier rain with fallen leaves, students walking with backpacks, bicycles at racks, slim modern street lamps, overcast sky, late-afternoon light.'
+};
+const STYLE_X = ' Photorealistic cinematic film still from a modern psychological thriller, shot on an ARRI Alexa 35 with anamorphic lenses, shallow depth of field, subtle film grain, soft halation on highlights, muted teal-and-amber grade with print-film contrast, motivated practical lighting. Composed for a 2.39:1 widescreen crop. No text, signs, captions, logos or watermarks anywhere.';
+const STYLE = ' Photorealistic cinematic film still from a modern psychological thriller, shot on an ARRI Alexa 35 with anamorphic lenses, shallow depth of field, oval bokeh, natural skin texture with visible pores, subtle film grain, soft halation on highlights, muted teal-and-amber grade with print-film contrast, motivated practical lighting. Composed for a 2.39:1 widescreen crop: heads and key action sit in the middle band of the frame. No text, signs, captions, logos or watermarks anywhere.';
+const LOCK = ' His face, hair and clothing stay exactly the same throughout.';
+const VEO = ' Natural, understated film acting. No subtitles. No music.';
+function fill(s){return s.replace(/\{(\w+)\}/g,(m,k)=>C[k]||m)}
+// In shot prompts, places point to their attached reference instead of re-describing it, so the reference image wins.
+const PLACE = {
+ CAFE:'the cafe from the attached cafe reference image, exactly as shown.',
+ ROOM:'the dorm room from the attached room reference image, with its layout, furniture, walls and window exactly as shown.',
+ HALL:'the corridor from the attached corridor reference image, exactly as shown.',
+ STREET:'the campus street from the attached street reference image, exactly as shown.'
+};
+const SND = {"S01": "Audio: a low electrical room hum. Nobody speaks.", "S02": "Audio: only the low hum of the monitor. Nobody speaks.", "S03": "Audio: only a low hum and the faint creak of the chair. Nobody speaks.", "S04": "Audio: only rain tapping on the glass and the muffled street outside. No voices are heard.", "S05": "Audio: soft rain on the window and a quiet cafe murmur in the distance. Eli and Maya are silent.", "S06": "Audio: soft rain on the window and a quiet cafe murmur. Nobody nearby speaks.", "S07": "Audio: soft rain on the window and a quiet cafe murmur. Maya is silent.", "S08a": "Audio: he speaks only these three words, then soft rain and a quiet cafe murmur. No other speech.", "S08b": "Audio: soft rain on the window and a quiet cafe murmur. Nobody speaks.", "S09": "Audio: she speaks only that one line; otherwise damp street ambience, distant traffic and footsteps. No other speech.", "S10": "Audio: his footsteps on wet leaves and distant campus ambience. Nobody near the camera speaks.", "S11": "Audio: footsteps on damp pavement, distant traffic and faint campus chatter. Nobody near the camera speaks.", "S12": "Audio: the steady tick of a crossing signal, distant traffic and a light breeze. Nobody speaks.", "S13": "Audio: his footsteps on a tiled lobby floor, a page turning, muffled street ambience from the open door. Nobody speaks.", "S14": "Audio: footsteps climbing echoing concrete stairs and a fluorescent hum. Nobody speaks.", "S15": "Audio: his slow footsteps and a buzzing fluorescent light. Nobody speaks.", "S16": "Audio: slow, held breathing and a quiet corridor hum. Nobody speaks.", "S17": "Audio: a low room hum. Nobody speaks.", "S18": "Audio: the soft creak of the turning chair and a low room hum. Nobody speaks.", "S19": "Audio: silence and hard breathing, then he speaks only the words \"No. No, no, no.\" No other speech.", "S20": "Audio: hard breathing and a corridor hum, then the man in the doorway speaks only the word \"Seriously?\" No other speech.", "S21": "Audio: slow chewing, hard breathing and a fluorescent hum. Nobody speaks.", "S22": "Audio: the man in the doorway speaks only the words \"One sec.\" No other speech.", "S23": "Audio: a steady fluorescent hum and the shuffle of feet stepping forward in unison. Nobody speaks.", "S24": "Audio: a steady fluorescent hum. Nobody speaks."};
+function fillShot(s){return s.replace(/\{(\w+)\}/g,(m,k)=>PLACE[k]||C[k]||m)}
+
+const PHASES = [
+ {id:'p1', t:'セットアップ', d:'1日目', items:[
+  ['d','Videos\\Occupiedを作成し、refs、frames、clips、audio\\vo、audio\\music、audio\\sfx、rendersを入れます'],
+  ['d','脚本を読み、生成前に変更したい点があれば知らせます']]},
+ {id:'p2', t:'リファレンス', d:'R1 to R8', items:[
+  ['d','R1からR8を生成します（下のカード）'],
+  ['d','R1、R2、R3をClaudeに送り、顔と衣装の一貫性をチェックしてもらいます'],
+  ['c','リファレンスを承認するか、修正用の編集プロンプトを返します']]},
+ {id:'p3', t:'キーフレーム', d:"S01 to S23", items:[
+  ['d','すべてのキーフレーム静止画と、S03とS18の終了フレームを作ります'],
+  ['d','全セットをClaudeに一括で送ります'],
+  ['c','フレームごとのレビュー。顔の一致、衣装、手、余分な文字、2.39クロップの安全性です'],
+  ['d','却下された静止画を再生成するか編集します']]},
+ {id:'p4', t:'アニメーション', d:'Flow', items:[
+  ['d','まずS08a（横顔のセリフ）をテストし、Omniが話す口をどう処理するか確認してから、Claudeに送ります'],
+  ['d','すべてのクリップをOmni Flashで生成します。利用可能な最高解像度です'],
+  ['c','クリップのレビュー。各クリップの最良の秒数、モーフィング、顔のドリフト、使用できないテイクです'],
+  ['d','Claudeが指摘したクリップを再実行します']]},
+ {id:'p5', t:'ボイス', d:'Speechify', items:[
+  ['d','「I had it again. The dream.」と「Text me when you\'re home.」で声を試し、EliとMayaを決めます'],
+  ['d','正確な声の名前と設定をフォルダのREADMEに記録します'],
+  ['d','Speechifyでマスターファイルを二つ録音します。OCC_VO_ELIとOCC_VO_MAYAです（台本はボイスプランにあります）']]},
+ {id:'p6', t:'スコアとサウンド', d:'Suno', items:[
+  ['d','スコアを三回生成し、最良のものを残します（提供されればステムをダウンロードします）'],
+  ['d','追加の効果音はaudio\\sfxに保存します']]},
+ {id:'p7', t:'編集', d:'Claude, HyperFrames', items:[
+  ['c','ビートマップに合わせたアセンブリカット。映像のタイミングです'],
+  ['c','セリフ。Speechifyのセリフを配置し、画面内の4行を口に同期させ、ルームトーンを再構築します'],
+  ['c','スコアの編集、サウンドデザイン、約-16 LUFSへのミックスです'],
+  ['c','グレード、グレイン、ハレーション、レターボックス、オーバーレイです'],
+  ['c','v1をレンダリングします']]},
+ {id:'p8', t:'レビューと納品', d:'', items:[
+  ['d','v1を見てノートを送ります'],
+  ['c','必要に応じてv2とv3。全バージョンを保持します'],
+  ['c','マスター、Web用コピー、15秒ティーザー、ポスターフレームです'],
+  ['d','studio.madebydavidmartin.comに追加し、映画祭を選びます']]}
+];
+
+const REFS = [
+ {id:'R1', name:'R1 · Eli、ポートレート', attach:'nothing', why:'映画の顔です。すべてのEliとすべてのダブルがこれを使います。顔が具体的で信じられるものになるまで生成してください。モデルのような美形ではありません。',
+  img:'Head-and-shoulders portrait of {ELI} He looks just off camera with a quiet, preoccupied expression. Soft overcast window light from the left, a plain softly blurred dorm-room wall behind him. 85 mm look, eyes in sharp focus.'},
+ {id:'R2', name:'R2 · Eli、全身', attach:'OCC_R1_eli', why:'衣装、バックパック、プロポーションを固定します。',
+  img:'Full-body photo of {ELI} The same man as in the attached portrait. He stands on a damp campus sidewalk with fallen leaves, a black backpack over one shoulder, hands in his jeans pockets, facing the camera. Overcast late-afternoon light.'},
+ {id:'R3', name:'R3 · Eli、後ろ姿', attach:'OCC_R2_eli_full', why:'ダブル用です。人混みの中のダブルのショットはすべてこの視点を使います。Eliがダブルとフレームを共有するショットも同様です。',
+  img:'Full-body photo of {BACK}, walking away from the camera along a damp campus sidewalk with fallen leaves, a black backpack over one shoulder. The back of his head and his clothing are clearly visible. Overcast late-afternoon light.'},
+ {id:'R4', name:'R4 · Maya、ポートレート', attach:'nothing', why:'カフェのシーン用にMayaを固定します。',
+  img:'Head-and-shoulders portrait of {MAYA} A warm, slightly concerned half-smile, looking just off camera. Soft overcast window light, a softly blurred cafe interior behind her. 85 mm look.'},
+ {id:'R5', name:'R5 · カフェ', attach:'nothing', why:'カフェの内観、無人です。S04からS08に使います。',
+  img:'Interior of {CAFE} An empty window table for two in the foreground with two white ceramic cups. Nobody in the frame.'},
+ {id:'R6', name:'R6 · 寮の部屋', attach:'nothing', why:'二回使います。夢の中の夜と、最後の昼間です。レイアウトが一致しなければなりません。',
+  img:'Wide view from the open doorway into {ROOM} The desk and chair are straight ahead, the chair facing the desk with its back to the camera, the monitor switched on and glowing pale blue. Grey late-afternoon light through the half-closed blinds. Nobody in the room.'},
+ {id:'R7', name:'R7 · 二階の廊下', attach:'nothing', why:'S15からS23のドアの廊下です。',
+  img:'Wide view down {HALL} Every door is closed. Nobody in the corridor. Camera at eye height in the exact centre of the corridor.'},
+ {id:'R7b', name:'R7b · 廊下、横からのアングル', attach:'OCC_R7_corridor', why:'R7と同じ廊下を、側壁のドアに向けたものです。S16（彼自身のドアを見る視点）に使い、Flowが中央に寄せる場合はドアを叩くショットS20からS22にも役立ちます。',
+  img:'The same residence hall corridor as in the attached reference image, with the same cream cinder-block walls, speckled floor, dark wooden doors, brass plates and fluorescent ceiling lights, now seen from a different angle: the camera stands near the left-hand wall and looks diagonally across the corridor at one dark wooden door in the right-hand wall. That door is in the right third of the frame, closed. The corridor continues into the background on the left. Nobody in the corridor.'},
+ {id:'R8', name:'R8 · キャンパスの通り', attach:'nothing', why:'帰り道のキャンパス、季節、天候を固定します。',
+  img:'Wide view of {STREET} A red-brick residence hall with a stone entrance and glass doors on the right side of the street. A few students in the distance, none close to the camera.'}
+];
+
+const SHOTS = [
+ {id:'S01', t:'0.0 to 3.5', name:'夢のドア', model:'Omni Flash、逆再生', attach:'R6, R3',
+  why:'映画の最初の映像です。わずかに開いたドアがゆっくり開き、机の人影が現れます。Flowはわずかに開いたドアを開始フレームとして描けませんでした（二重ドアを発明しました）。そのため逆向きに撮ります。開いた視点から始め、ドアをほぼ閉まるまで振らせ、Claudeがクリップを逆再生します。人影は静止しているので、逆再生は見分けられません。',
+  img:'First-person view through a wide open door, looking into {ROOM} It is now night: the room is dark, lit only by the pale blue glow of the monitor. The young man from the attached back-view reference sits in the desk chair with his back to the camera.',
+  mo:'One continuous, unbroken shot, no cuts. Static camera. The single dark wooden door slowly swings closed on its own and keeps closing until it hides the desk and the seated figure completely. It stops just short of shut: the door now fills the frame, with only a thin vertical sliver of blue light along its edge and nothing of the room visible. The figure at the desk stays perfectly still with his back to the camera until the door hides him.'},
+ {id:'S02', t:'3.5 to 7.0', name:'椅子の背', model:'Omni Flash', attach:'R3, R6',
+  why:'人影へゆっくりプッシュします。カットするタイミングで椅子が回り始めます。',
+  img:'Medium shot from just inside the doorway at night: {BACK}, sitting in the black mesh office chair at the desk, facing the glowing monitor, in {ROOM} The only light is the pale blue monitor glow rimming his hair and shoulders. His face is completely hidden.',
+  mo:'One continuous, unbroken shot, no cuts. Very slow push-in toward the seated figure. Near the end the chair begins to rotate slowly toward the camera, a few degrees only. His face stays hidden. The pale blue monitor light stays steady.'},
+ {id:'S03', t:'7.0 to 9.0', name:'顔', model:'Omni Flash、開始フレームと終了フレーム', attach:'R1, R2, R6',
+  why:'明かしのショットです。開始フレームと終了フレームにより、回転中に顔がモーフィングするのを防ぎます。最終フレームで暗転へスマッシュします。',
+  img:'Close-up at night: {ELI} He sits in the black mesh chair at his desk, his head and shoulders turned three-quarters away from the camera, the right side of his face in deep shadow, lit only by pale blue monitor light from behind. Dark cinder-block wall behind.',
+  end:'Edit this image. Only change: he has turned fully toward the camera and looks straight into the lens with a calm, expressionless face, his face half lit by the cold blue monitor light from the side. Nothing else changes.',
+  mo:'One continuous, unbroken shot, no cuts. Static camera. The chair rotates slowly and he turns to face the camera, ending with his eyes looking straight into the lens. He does not blink. Completely still at the end.'+LOCK},
+ {id:'S04', t:'12.0 to 19.0', name:'カフェの窓', model:'Omni Flash', attach:'R1, R2, R4, R5',
+  line:['ELI / MAYA（ガラス越し）','I had it again. The dream. / The room one?','VO_01, VO_02'],
+  why:'現実世界を確立します。暖かく、雨が降り、平凡です。最初の二行はこのショットの上で流れるため、口は読めないようにしなければなりません。カメラは外にあり、雨滴にピントが合っています。二人はガラスの向こうで柔らかく、横向きのままです。',
+  img:'Shot from outside on the rainy sidewalk, looking at the cafe window. The rain-covered glass fills the entire frame and the focus is on the raindrops on the glass, sharp and glistening. Behind the glass, soft and out of focus, Eli and Maya from the attached references sit across a small window table from each other, seen side-on in profile, warm pendant bulbs glowing above them. Eli is troubled and tense: shoulders hunched, head lowered, both hands gripping his cup, a worried frown. Maya leans toward him with concern. Reflections of maple trees, street lamps and the grey sky lie over the glass. Interior: {CAFE}',
+  mo:'One continuous, unbroken shot, no cuts. Slow lateral dolly along the outside of the window. The focus stays on the raindrops on the glass for the whole shot; the couple inside stays soft and out of focus. Raindrops run slowly down the glass and reflections slide across it. Inside, Eli stays hunched and troubled, staring down into his cup with a worried frown, rubbing his forehead once with one hand; Maya leans toward him, concerned. Both stay seated.'},
+ {id:'S05', t:'19.0 to 21.0', name:'Eliがうなずく', model:'Omni Flash', attach:'R1, R2, R4, R5',
+  why:'「The room one?」への彼の無言の答えです。前景で柔らかく映るMayaの三つ編みが奥行きを与えます。このショットにセリフはありません。',
+  img:'Medium close-up over Maya\'s shoulder, her auburn braid soft and out of focus in the left foreground: {ELI} He sits at the window table, both hands around a white ceramic cup, looking down at it, lips closed, a tired, worried frown, tense and shaken. Setting: {CAFE} Rain-dotted window light on his face.',
+  mo:'One continuous, unbroken shot, no cuts. Very slow push-in. Eli keeps his lips closed and his worried frown, looks up at Maya with troubled eyes, nods slowly once, then looks back down at his cup, his jaw tight. Maya stays still in the foreground.'+LOCK},
+ {id:'S06', t:'21.0 to 24.5', name:'カップの上の手', model:'Omni Flash', attach:'R2, R5',
+  line:['ELI（画面外）','I open the door, and someone\'s at my desk.','VO_03'],
+  why:'インサートです。セリフはこの上で流れるため、リップシンクは不要です。',
+  img:'Close-up of a young man\'s hands wrapped around a white ceramic cup of black coffee on a pale oak cafe table, the cuffs of a rust-orange corduroy overshirt over charcoal grey hoodie sleeves. Rain-dotted window light. Shallow depth of field.',
+  mo:'One continuous, unbroken shot, no cuts. Very slow push-in. The hands stay still around the cup; one thumb moves slowly along the rim. The surface of the coffee trembles very slightly. The cup keeps its exact shape.'},
+ {id:'S07', t:'24.5 to 26.5', name:'Mayaが聞く', model:'Omni Flash', attach:'R4, R3, R5',
+  line:['ELI（画面外）','He turns around...','VO_04a'],
+  why:'カバレッジです。Eliの声を聞きながら、彼女の表情の変化を見ます。前景のEliの肩は後ろからです。',
+  img:'Medium close-up over Eli\'s shoulder (rust-orange corduroy overshirt and dark wavy hair soft in the right foreground, his face not visible): {MAYA} She sits across the window table, listening closely with gentle concern, lips closed. Setting: {CAFE}',
+  mo:'One continuous, unbroken shot, no cuts. Static camera. Maya listens in silence, her lips closed. Her expression shifts slowly from concern to unease. She keeps looking at him.'},
+ {id:'S08a', t:'26.5 to 28.5', name:'"And it\'s me."', model:'Omni Flash', attach:'R1, R2, R5',
+  line:['ELI','And it\'s me.','VO_04b'],
+  why:'三語、窓を背景にした横顔です。シンクに寛容です。口が合わなければ、Claudeは無言の横顔の上にセリフを流し、思考として読めます。',
+  img:'Profile close-up of {ELI} He sits at the cafe window table, looking out through the rain-streaked glass, eyes unfocused, lost in the memory, his face drawn and anxious. Setting: {CAFE} Soft grey window light along his profile.',
+  mo:'One continuous, unbroken shot, no cuts. Very slow push-in. Still looking out of the window, he says very quietly: "And it\'s me." Then he is silent and still, unsettled.'+LOCK+VEO},
+ {id:'S08b', t:'28.5 to 32.0', name:'彼の手の上の彼女の手', model:'Omni Flash', attach:'R2, R4, R5',
+  line:['MAYA / ELI（画面外）','Hey. It\'s a dream. You\'ve barely slept all week. / Yeah.','VO_05, VO_06'],
+  why:'彼女の手が彼の手を覆うインサートで、両方のセリフがその上で流れます。優しく、リップシンクは不要です。動きは最小限にしてください。手はOmniの最も苦手な部分です。',
+  img:'Close-up on a pale oak cafe table: a young woman\'s hand, the cuff of a cream cable-knit sweater at her wrist and a small gold ring, resting on top of a young man\'s hand beside a white ceramic cup. His sleeve is a rust-orange corduroy cuff over charcoal grey. Rain-dotted window light, shallow depth of field.',
+  mo:'One continuous, unbroken shot, no cuts. Static camera, very slow push-in. Her hand rests on his and gives one small, gentle squeeze. Both hands stay in place and keep their exact shape and five fingers each. Steam rises faintly from the cup.'},
+ {id:'S09', t:'32.0 to 36.0', name:'"Text me when you\'re home."', model:'Omni Flash', attach:'R3, R4, R8',
+  line:['MAYA','Text me when you\'re home.','VO_07'],
+  why:'前景に後ろ姿のEli。Mayaはすでに数歩先にいて、肩越しに呼びかけます。その距離では口が小さいため、シンクに寛容です。最後の暖かい瞬間です。',
+  img:'On the damp sidewalk outside the cafe on {STREET} Foreground right, out of focus: {BACK}, a black backpack over one shoulder. Mid-ground, several steps away and walking away from him: {MAYA} now wearing a dark green wool coat over the sweater, a tote bag on her shoulder, glancing back at him over her shoulder with a smile.',
+  mo:'One continuous, unbroken shot, no cuts. Static camera. Maya, walking slowly away, looks back over her shoulder, smiles and calls out: "Text me when you\'re home." Then she faces forward and keeps walking down the street. Eli stays still in the foreground, watching her go. Leaves drift down.'+VEO},
+ {id:'S10', t:'36.0 to 41.0', name:'歩いて帰る', model:'Omni Flash', attach:'R1, R2, R8, R3',
+  why:'リーディングトラッキングショットです。彼のずっと後ろ、ピントの外で、同じ錆色のオーバーシャツを着た人影が歩き去ります。指摘しないでください。',
+  img:'Medium shot, camera tracking backwards in front of {ELI} He walks toward the camera along the street, a black backpack over one shoulder, hands in pockets, eyes down, pensive. Setting: {STREET} Students blurred in the background; far behind him, out of focus, one young man in the same rust-orange overshirt walks away from the camera.',
+  mo:'One continuous, unbroken shot, no cuts. Smooth steady backwards tracking shot at walking pace. Eli walks toward the camera, deep in thought. Leaves fall slowly. Background students walk naturally and stay out of focus.'+LOCK},
+ {id:'S11', t:'41.0 to 45.0', name:'彼の前方視界', model:'Omni Flash', attach:'R3, R8',
+  why:'歩いて帰るEliの一人称視点です。前進するカメラ自体が歩くEliなので、誰も何もせず立っている人はいません。前方に数人の学生、こちらに背を向けています。その一人、錆色のジャケットを着た人物が角を曲がって消えます。ダブルは一人だけ、小さく、後ろ姿です。',
+  img:'First-person view at eye level, walking along the sidewalk of the campus street from the attached street reference, looking ahead down the sidewalk. A few students walk ahead in the same direction, well spaced out, their backs to the camera. About ten metres ahead, among them, a young man in a rust-orange corduroy overshirt and dark jeans, with no bag, walks away from the camera, back turned, just about to turn left around the corner of a red-brick building. Damp pavement, fallen maple leaves, overcast late-afternoon light.',
+  mo:'One continuous, unbroken shot, no cuts. Smooth forward walking point-of-view shot with a gentle, natural sway, moving slowly down the sidewalk. The people ahead keep walking away at an easy pace, their backs to the camera. The young man in the rust-orange overshirt turns left around the corner of the building and is gone. Leaves drift down. Everyone keeps their back to the camera.'},
+ {id:'S12', t:'45.0 to 49.0', name:'横断歩道', model:'Omni Flash', attach:'R1, R2, R8',
+  why:'横断歩道で待つEli、横向き、考え事に没頭しています。道路の向こう、柔らかくピントの外れたバス停のシェルターに、数人の普通の人々が待っています。その一人、ベンチに座ってスマホに頭を垂れている人物が、Eliの錆色のジャケットを着ています。誰も歩かず、誰も振り向かず、誰も誰かを見ません。全員がただ待っています。横断歩道とバス停では人はそうするものです。そのためOmniが発明する余地がありません。信号が変わる前にカットします。',
+  img:'Waist-up medium shot at a campus crosswalk. The camera stands on the sidewalk a couple of steps behind and beside the young man, looking across the road. In the left third of the frame: {ELI} He stands at the edge of the curb facing the road, waiting for the walk signal, his head turned to his left to look up the street toward the oncoming traffic and the crossing light, so his face is seen in profile, troubled and lost in thought, a black backpack strap over his shoulder, hands in his jacket pockets. Setting: {STREET} In the right two-thirds of the frame, across the road, softly out of focus in the background, a bus shelter with four people waiting: a woman in a camel coat holding a closed umbrella, an older man in a navy jacket reading a folded newspaper, a student in a grey puffer jacket looking down the road, and, sitting on the bench, a young man in a rust-orange corduroy jacket with his head bowed over his phone, his face hidden. Everyone is still.',
+  mo:'One continuous, unbroken shot, no cuts. Static camera. A quiet held moment: everyone stays where they are, waiting. Eli stands completely still at the curb, feet planted, lost in thought; only his eyes move, and he blinks once. Across the road, the people at the bus shelter wait with small natural movements only: the woman shifts her umbrella, the older man turns a page, the young man on the bench keeps his head bowed over his phone. Nobody walks and nobody turns around. A few leaves drift down.'+LOCK},
+ {id:'S13', t:'49.0 to 52.5', name:'ロビーへ', model:'Omni Flash', attach:'R1, R2',
+  why:'Eliがすでにロビーに一歩入った状態から始めます。開いた正面ドアは彼のすぐ後ろです。そのためOmniが彼をドア口を通らせる必要がありません（以前は歩かせる代わりにカットしました）。彼はスマホに視線を落としたまま、カメラに向かって数歩ゆっくり歩きます。顔を下に向け、距離を短くすることで、顔のドリフトを防ぎます。キーフレームのみで終了フレームはありません。Flowの編集では人物を近づけられません。5秒レンダリングし、Claudeが最もきれいな3.5秒を使います。',
+  img:'Inside the warm, softly lit lobby of an older red-brick university residence hall on an autumn afternoon, looking toward the open front door. Through the doorway behind him: grey daylight, stone steps and orange maple leaves outside. A student sits on a worn sofa to one side, reading, and another stands at a row of wooden mail cubbies on the side wall. {ELI} He has just stepped inside and stands one step in from the open doorway, facing the camera about four metres away, his head bowed as he looks down at the phone in his hand, his expression tired and troubled. The lobby is well lit by warm ceiling lights and lamps, well exposed, with soft fill light so his face and the room are clearly visible.',
+  mo:'One continuous, unbroken shot, no cuts. Static camera inside the lobby. The young man in the rust-orange overshirt takes two slow steps toward the camera, his head bowed, looking down at his phone the whole time. The student on the sofa keeps reading and the student at the mail cubbies stays at the wall. Calm, everyday scene.'+LOCK},
+ {id:'S14', t:'52.5 to 56.5', name:'階段室', model:'Omni Flash、開始フレームと終了フレーム', attach:'R3',
+  why:'階段の下から見上げるカメラです。Eliは後ろ姿で上へ登っていきます。上の踊り場では、錆色の服を着た人影が手すりに身を乗り出し、顔は影の中、やがて後ずさって視界から消えます。終了フレームが方向を固定します。彼は開始時より高い位置で終わります。',
+  img:'Low angle from the bottom of a worn concrete stairwell in an older residence hall, looking up the stairs, cold fluorescent light, a painted metal handrail. {BACK}, a black backpack over one shoulder, is on the lower steps with his back to the camera, climbing upward, one hand on the rail. On the landing above the top of the flight, a young man in a rust-orange overshirt leans over the rail looking down, his face completely in shadow.',
+  end:'Edit this image. Only change: the young man with the backpack is now near the top of the flight, much higher up the stairs and smaller in the frame, still seen from behind, and the landing above is empty: the figure leaning on the rail is gone. Nothing else changes.',
+  mo:'One continuous, unbroken shot, no cuts. Static camera at the bottom of the stairs. The young man with the backpack climbs up the stairs, step by step, moving away from the camera and higher in the frame, his back to the camera the whole time. Above, the shadowed figure leans on the rail for a moment, then steps back out of view. The fluorescent light stays steady and even.'},
+ {id:'S15', t:'56.5 to 61.0', name:'廊下', model:'Omni Flash', attach:'R3, R7',
+  why:'後ろからの一点透視です。映画で最も長い歩行です。クリップの中では明かりは安定させます。Omniのちらつきはグリッチに見えるため、必要ならClaudeが編集で控えめなちらつきを一つ加えます。',
+  img:'Wide symmetrical one-point-perspective shot down {HALL} {BACK} walks slowly away from the camera down the exact centre of the corridor, a black backpack over one shoulder. The fluorescent ceiling panels give steady, even light.',
+  mo:'One continuous, unbroken shot, no cuts. The camera follows slowly behind him at a steady distance, perfectly centred. He walks slowly down the middle of the corridor. The lighting stays steady and even. All the doors stay closed.'},
+ {id:'S16', t:'61.0 to 64.0', name:'中に誰かいる', model:'Omni Flash', attach:'R7b（作成した場合）, なければなし',
+  why:'S01の夢のドアと同様に、Eliの一人称視点として作り直しました。Flowが受け入れました。フレーム内に人物は一切いないため、フィルターが問題にする対象がありません。緊張は彼が見たものから生まれます。閉じたドアの下の細い青いモニターの光の線と、中で誰かがタイプする音です。クリップ自体はゆっくりしたプッシュインのみです。Omniに影を求めたら足と透けたドアを描いたため、Claudeが編集で光を横切る影を一つ加えます。続くS17では同じ視点から同じドアが開きます。ここで「4:47 PM」のタイムスタンプが現れます。',
+  img:'First-person view standing in a residence hall corridor, directly facing a closed dark wooden door in the side wall, about two steps away. The door fills the centre of the frame: dark wood grain, a small blank brass plate, a round brass doorknob on the right. Cream cinder-block walls on either side, a speckled linoleum floor. A thin, bright line of cold blue light glows through the gap under the door from the room inside. Steady, cold overhead fluorescent light in the corridor. Nobody in the frame.',
+  mo:'One continuous, unbroken shot, no cuts. Very slow push-in toward the closed door, with a faint, slightly unsteady handheld drift, as if someone is holding their breath. The solid wooden door stays closed, still and completely opaque, and the thin line of blue light under it stays steady and unchanged. Only the camera moves.'},
+ {id:'S17', t:'64.0 to 67.0', name:'ドアが開く', model:'Omni Flash、逆再生', attach:'R3, R6',
+  why:'S01との呼応、灰色の昼光で、同じ方法で作ります。開いた視点から始め、ドアをほぼ閉まるまで振らせ、Claudeが逆再生することで、ドアがゆっくり開くように見えます。すでに良い全開のフレームがある場合は、それをアニメーション化してください。',
+  img:'First-person view from the corridor through a wide open dark wooden door into {ROOM} Grey late-afternoon light through the half-closed blinds, the monitor glowing pale blue. {BACK}, sits in the black mesh chair at the desk, back to the camera, facing the monitor.',
+  mo:'One continuous, unbroken shot, no cuts. Static camera. The single dark wooden door slowly swings closed on its own and keeps closing until it hides the desk and the seated figure completely. It stops just short of shut: the door now fills the frame, with only a thin vertical sliver of grey light along its edge and nothing of the room visible. The seated figure stays perfectly still with his back to the camera until the door hides him.'},
+ {id:'S18', t:'67.0 to 70.0', name:'ダブルが振り向く', model:'Omni Flash、開始フレームと終了フレーム', attach:'R3, R6',
+  why:'ダブルが夢とまったく同じように振り向き、ただ彼を見ます。無言です。彼のセリフは次のショットで、Eliの顔の上に来ます。',
+  img:'Medium shot from the open doorway, grey late-afternoon light. The young man from the attached back-view reference sits in the black mesh office chair at the desk, facing the glowing monitor, seen from directly behind: the high back of the chair, the back of his head with its dark wavy hair, the grey hood and the rust-orange shoulders of his overshirt. The monitor glows pale blue in front of him. Setting: {ROOM}',
+  end:'Attach this image and OCC_R1_eli. Edit this image. Only change: the chair has turned and he faces the camera directly, with the face of the attached Eli portrait, relaxed in the chair, one arm on the armrest, looking straight into the lens with a calm, faintly patient expression. Nothing else changes.',
+  mo:'One continuous, unbroken shot, no cuts. Static camera. The chair turns slowly toward the camera. He looks straight into the lens with his lips closed and then simply waits, perfectly still.'+LOCK},
+ {id:'S19', t:'70.0 to 74.0', name:'"You\'re early." / "No, no, no."', model:'Omni Flash', attach:'R1, R2, R3, R7',
+  line:['ダブル（画面外） / ELI','You\'re early. / No. No, no, no.','VO_08, VO_09'],
+  why:'古典的なホラーの文法です。Eliの顔を見ながらダブルの声を聞きます。その後パニックが来るため、リップシンクのずれは隠れます。座っているダブルの肩越し、後ろから撮るため、見える顔は一つだけです。',
+  img:'Inside the dorm room, looking back toward the open doorway. The camera is at the desk end of the room, so the desk, the lamp and the window are behind the camera and out of view. In the soft foreground on the left, {BACK}, sits in the black mesh office chair, which is turned to face the doorway. The plain cream cinder-block wall runs along the left side of the frame; the foot of a single bed with a grey blanket runs along the right-hand wall. In the open doorway stands {ELI} He is frozen, his face pale with shock, the corridor behind him lit by steady fluorescent light.',
+  mo:'One continuous, unbroken shot, no cuts. Static camera. For a moment Eli stands frozen in the doorway, staring. Then he stumbles backwards out of the doorway into the corridor, shaking his head, breathing hard, saying: "No. No, no, no." The seated figure in the foreground stays perfectly still.'+LOCK+VEO},
+ {id:'S20', t:'74.0 to 78.0', name:'ドア1："Seriously?"', model:'Omni Flash、プレートとクリップ1本', attach:'R1, R2',
+  line:['ELI（画面外） / ダブル','Hey! Hey, I need help! / Seriously?','VO_10, VO_11'],
+  why:'Eliの一人称視点です。カメラがEliなので、画面に映る顔は一つだけです。アニメーション化したドアではなく、カットとして構築します。まず閉じた隣人のドア。彼がドアを叩いて叫ぶ声が聞こえます（叩く音とセリフは編集で加えます）。次にラッチの音でハードカットし、開いたドアとそこに立つ彼になります。カメラの前でドアが動く必要がないため、Omniがグリッチした箇所を避けられます。画像は二つです。下の閉じたドアのプレートと、開いたドアのキーフレーム（すでに持っているフレームで問題ありません。彼がドア口の中に立っているものを使ってください）。',
+  img:'First-person view at eye level from a residence hall corridor, looking straight into an open dorm room doorway. The doorway is set flush in the flat corridor wall and seen straight on: the camera faces the wall squarely, and only a narrow strip of flat cream cinder-block wall, in the same plane as the dark wooden door frame, shows at the left and right edges of the frame. The corridor ceiling lights are above the frame, out of view. Standing in the doorway, facing the camera, one hand resting on the edge of the open wooden door: a man with the face of the attached Eli portrait, in the same rust-orange corduroy overshirt and charcoal grey hoodie, irritated. He carries no bag. Behind him, a clearly different dorm room: warm yellow lamplight, a string of warm fairy lights along the wall, colourful abstract posters with no words, an acoustic guitar on an unmade bed, clothes piled on a chair. He is the only person in the frame.',
+  extra:[['閉じたドアのプレート · 画像','16:9、添付なし','First-person view at eye level in a residence hall corridor, facing a closed dark wooden door straight on, about one step away. The door is set flush in a flat cream cinder-block wall and fills the centre of the frame: dark wood grain, a small blank brass plate, a round brass doorknob. Warm yellow light glows in the thin gap under the door. Steady, cold corridor light. Nobody in the frame.'+STYLE_X],['閉じたドアのプレート · モーション','Frames to Video、プレートを最初のフレームに','One continuous, unbroken shot, no cuts. Static camera with a faint, slightly unsteady handheld drift. The closed door stays shut and still. Nothing else moves. Audio: a quiet corridor hum. Nobody speaks.']],
+  mo:'One continuous, unbroken shot, no cuts. Static camera at eye level. The man in the doorway frowns and says, annoyed: "Seriously?" Then he stares into the lens, waiting. He keeps his hand on the door and stays in the doorway. He is the only person in the shot. Natural, understated film acting. No subtitles. No music. Audio: he speaks only the word "Seriously?" No other speech.'},
+ {id:'S21', t:'78.0 to 80.5', name:'ドア2：カップ麺', model:'Omni Flash', attach:'R1, R2',
+  why:'次の開いたドアへ直行するハードカットです。閉じたドアのプレートはありません。ペースが上がります。別の部屋です。薄暗く、青と紫のゲーミングライト、二つのモニター、空の缶。彼はインスタント麺を食べながら、ただ見つめます。セリフはありません。',
+  img:'First-person view at eye level from a residence hall corridor, looking straight into an open dorm room doorway. The doorway is set flush in the flat corridor wall and seen straight on: the camera faces the wall squarely, and only a narrow strip of flat cream cinder-block wall, in the same plane as the dark wooden door frame, shows at the left and right edges of the frame. The corridor ceiling lights are above the frame, out of view. Standing in the doorway, facing the camera, he carries no bag. One hand rests on the edge of the open door; the other holds a paper cup of instant noodles with a plastic fork in it. He has the face of the attached Eli portrait and wears the same rust-orange corduroy overshirt and charcoal grey hoodie, mid-chew, with a completely blank expression. Behind him, a clearly different dorm room: dim, lit by blue and purple LED strip light, a desk with two glowing monitors, a gaming chair, empty cans on the desk. He is the only person in the frame.',
+  mo:'One continuous, unbroken shot, no cuts. Static camera at eye level. The man in the doorway keeps chewing slowly, staring blankly into the lens, saying nothing. He stays in the doorway. The noodle cup stays in his hand and keeps its shape. He is the only person in the shot. Audio: slow chewing and a faint hum. Nobody speaks.'},
+ {id:'S22', t:'80.5 to 82.5', name:'ドア3："One sec."', model:'Omni Flash', attach:'R1, R2',
+  line:['DOUBLE','One sec.','VO_12'],
+  why:'彼は電話の途中で応対し、指を立てて「One sec.」と言い、電話に戻ります。ドアが閉まる処理は編集で行います。Claudeがドアの閉まる音とともにS20の閉じたドアのプレートへカットします。カメラに向かってドアが振れるクリップはFlowに拒否されたためです。これも拒否された場合はS22を外してください。S23の前にドアは二つで十分です。三つ目の異なる部屋です。整っていて明るく、窓辺に植物、黄金色の夕方の光です。',
+  img:'First-person view at eye level from a residence hall corridor, looking straight into an open dorm room doorway. The doorway is set flush in the flat corridor wall and seen straight on: the camera faces the wall squarely, and only a narrow strip of flat cream cinder-block wall, in the same plane as the dark wooden door frame, shows at the left and right edges of the frame. The corridor ceiling lights are above the frame, out of view. Standing in the doorway, facing the camera, he carries no bag. One hand rests on the edge of the open door; the other holds a phone to his ear. He has the face of the attached Eli portrait and wears the same rust-orange corduroy overshirt and charcoal grey hoodie, busy and distracted. Behind him, a clearly different dorm room: tidy and bright, golden evening light through the window, potted plants on the windowsill, a neatly made bed. He is the only person in the frame.',
+  mo:'One continuous, unbroken shot, no cuts. Static camera at eye level. Holding a phone to his ear, the man in the doorway glances at the lens, lifts one finger and says flatly: "One sec." Then he looks away, back to his phone call, calm and distracted. He stays in the doorway. He is the only person in the shot. Natural, understated film acting. No subtitles. No music.'},
+ {id:'S23', t:'82.5 to 87.5', name:'すべてのドア', model:'Omni Flash', attach:'R1, R2, R3, R7',
+  why:'ポスター画像であり最終ショットです（S24は削除）。Claudeはこのショットを引き延ばし、その上で明かりをちらつかせて消し、暗転へカットします。中央に後ろ姿のEli。すべてのドアが開き、ダブルが一人ずつ出てきて彼の方を向きます。距離により顔は小さいため、モデルが保持できます。',
+  img:'Wide symmetrical one-point-perspective shot down {HALL} In the exact centre foreground, {BACK} stands frozen in fear: shoulders hunched and raised toward his ears, both hands out of his pockets and held tense and half raised in front of him, one foot half a step back as if about to retreat, his head turning from side to side toward the doorways. Every door on both sides of the corridor is open, and in each doorway stands the same young man in the same rust-orange corduroy overshirt and charcoal grey hoodie, all with the face of the attached Eli portrait, all looking at the man in the centre.',
+  mo:'One continuous, unbroken shot, no cuts. Very slow push-in from behind the man in the centre. Along both sides, the young men in the doorways step forward half a pace into the corridor in unison and stand still, all staring at him. The man in the centre flinches, takes one small step backwards and turns his head from side to side, his shoulders hunched, his hands raised and tense. The fluorescent lighting stays steady and even.'},
+];
+
+const SONG = [
+ {tag:'音楽のスタイル', sub:'Suno、インストゥルメンタルON', text:'Cinematic psychological thriller film score, instrumental, 70 BPM, sparse and intimate. A simple, haunting four-note felt piano motif, warm analog synth drone, sustained low cello and contrabass, subtle ticking clock pulse, reversed piano swells. Slowly builds into dense dissonant strings, pulsing sub bass and heavy low percussion hits, then ends abruptly with a hard stop. Modern indie thriller soundtrack, dark, melancholic, unsettling, high fidelity.'},
+ {tag:'除外するスタイル', sub:'', text:'vocals, choir, lyrics, pop, EDM drop, rock drums, guitar solo, upbeat, happy, jazz, lo-fi hip hop, trailer braams, long fade-out'},
+ {tag:'歌詞フィールド（構成のみ）', sub:'', text:'[Intro: eerie low drone, distant single piano notes]\n\n[Theme: soft felt piano motif, melancholy, very quiet]\n\n[Build: ticking clock pulse, low strings rising slowly]\n\n[Tension: dissonant strings, heartbeat sub bass, growing]\n\n[Climax: full dissonant orchestra, pounding low hits]\n\n[Hard stop]\n\n[End]'}
+];
+
+const SFX = ['ドアの蝶番のきしみとラッチ（夢と現実のドア）','モニターと部屋のハム、夜の環境音','カフェ。エスプレッソマシンのシューという音、カップ、低いざわめき、ガラスの雨音','キャンパスの通り。濡れた落ち葉の足音、遠くの交通、自転車のベル','建物のドア、階段室の足音と反響','蛍光灯のブーンという音とちらつき','ドアをノックする音と叩く音','ヘッドホンからの音漏れ、麺をすする音、電話のくぐもった声','暗転でのスマホのバイブ音'];
+
+const VO = [
+ ['VO_01','S04','Eli','I had it again. The dream.','ガラス越し'],
+ ['VO_02','S04','Maya','The room one?','ガラス越し'],
+ ['VO_03','S06','Eli','I open the door, and someone\'s at my desk.','手元のカットに重ねて'],
+ ['VO_04a','S07','Eli','He turns around...','Mayaのカットに重ねて'],
+ ['VO_04b','S08a','Eli','And it\'s me.','横顔、シンクあり'],
+ ['VO_05','S08b','Maya','Hey. It\'s a dream. You\'ve barely slept all week.','手元のカットに重ねて'],
+ ['VO_06','S08b','Eli','Yeah.（小さく息を吐くような笑いとともに）','手元のカットに重ねて'],
+ ['VO_07','S09','Maya','Text me when you\'re home.','距離のある場所で'],
+ ['VO_08','S19','ダブル（Eliの声）','You\'re early.','Eliの顔の上に'],
+ ['VO_09','S19','Eli','No. No, no, no.','パニック、シンクあり'],
+ ['VO_10','S20','Eli','Hey! Hey, I need help!','画面外（彼の一人称視点）'],
+ ['VO_11','S20','ダブル（Eliの声）','Seriously?','顔、シンクあり'],
+ ['VO_12','S22','ダブル（Eliの声）','One sec.','顔、シンクあり']
+];
+
+const EDL = [
+ ['0.0 to 3.5','S01 夢のドアが開く','ドローン、低い部屋のハム、ドアのきしみ','"3:12 AM"'],
+ ['3.5 to 9.0','S02、S03 椅子が回り、Eliの顔','ドローンが高まり、暗転でぴたりと止まる',''],
+ ['9.0 to 12.0','暗転','無音、その後エスプレッソのシューという音','タイトル：OCCUPIED'],
+ ['12.0 to 21.0','S04 窓（最初の二行）、S05 Eliがうなずく','雨、カフェのざわめき、ピアノのモチーフ低く','なし'],
+ ['21.0 to 32.0','S06 手元、S07 Maya、S08a 横顔、S08b 彼女の手','セリフ、ピアノ','なし'],
+ ['32.0 to 36.0','S09 Mayaが去る','通りの環境音','なし'],
+ ['36.0 to 49.0','S10 歩行、S11 人混み、S12 横断歩道','チクタクというパルスが入る。通りの音が薄くなる','なし'],
+ ['49.0 to 61.0','S13 入口、S14 階段室、S15 廊下','弦が高まる、蛍光灯のブーンという音','なし'],
+ ['61.0 to 67.0','S16 彼の一人称視点。ドアの下の光、影が動く。S17 ドアが開く','音楽はほぼ無音まで落ちる。中からくぐもったタイピング音','"4:47 PM"（S16）'],
+ ['67.0 to 74.0','S18 ダブルが振り向く、S19 Eliが凍りつき、後ずさる','"You\'re early." 画面外、低い打撃音一つ、呼吸','なし'],
+ ['74.0 to 82.5','S20、S21、S22 ドア','クライマックス。ノックをビートに合わせてカット','なし'],
+ ['82.5 to 87.5','S23 すべてのドア、その上で明かりがちらついて消える','ピーク、その後無音へハードカット','なし'],
+ ['87.5 to 90.0','暗転','スマホのバイブ音','"Maya · home yet?"']
+];
+
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function promptBox(tag,sub,text){return `<div class="prompt"><div class="pbar"><span class="tag">${tag}</span><span>${sub}</span><button class="copy" type="button">コピー</button></div><pre>${esc(text)}</pre></div>`}
+function store(){try{return JSON.parse(localStorage.getItem('occ_done')||'{}')}catch(e){return{}}}
+function save(o){try{localStorage.setItem('occ_done',JSON.stringify(o))}catch(e){}}
+const done=store(); const ids=[];
+function box(id,label){ids.push(id);return `<label><input type="checkbox" id="chk-${id}" data-k="${id}" ${done[id]?'checked':''}> ${label||'完了'}</label>`}
+const who={d:'<span class="who d">David</span>',c:'<span class="who c">Claude</span>'};
+
+document.getElementById('phaseList').innerHTML=PHASES.map((p,pi)=>`<div class="phase"><h3>${pi+1}. ${p.t}<span>${p.d}</span></h3><ul class="steps">${p.items.map((it,i)=>{const id=p.id+'_'+i;ids.push(id);return `<li><label><input type="checkbox" id="chk-${id}" data-k="${id}" ${done[id]?'checked':''}><span>${esc(it[1])} ${who[it[0]]}</span></label></li>`}).join('')}</ul></div>`).join('');
+
+document.getElementById('styleBoxes').innerHTML=promptBox('スタイル接尾辞','すべての画像プロンプトの末尾にすでに入っています',STYLE.trim())+promptBox('モーションの結び','該当する箇所に加えます',LOCK.trim()+'\n'+VEO.trim()+'  （セリフのあるショットのみ）');
+
+const CANON=[['ELI','Eli'],['BACK','Eliの後ろ姿と、人混みの中のすべてのダブル'],['MAYA','Maya'],['CAFE','カフェ'],['ROOM','寮の部屋'],['HALL','廊下'],['STREET','キャンパス']];
+document.getElementById('canonList').innerHTML=CANON.map(c=>promptBox(c[1].toUpperCase(),'正規テキスト',C[c[0]])).join('');
+
+document.getElementById('refList').innerHTML=REFS.map(r=>`<article class="card"><div class="card-head"><h3>${r.name}</h3>${box(r.id)}</div><p class="why">${r.why}</p><p class="attach"><b>添付：</b> ${r.attach==='nothing'?'なし':r.attach}</p>${promptBox('画像プロンプト','16:9',fill(r.img)+STYLE)}</article>`).join('');
+
+document.getElementById('shotList').innerHTML=SHOTS.map(s=>`<article class="card"><div class="card-head"><span class="tc">${s.t} s</span><h3>${s.id} · ${esc(s.name)}</h3><span class="model">${s.model}</span>${box(s.id)}</div><p class="why">${esc(s.why)}</p>${s.line?`<div class="line"><b>${esc(s.line[0])}</b>${esc(s.line[1])} <span style="color:var(--muted);font-family:var(--mono);font-size:11px">(${s.line[2]})</span></div>`:''}<p class="attach"><b>添付：</b> ${s.attach.split(', ').map(x=>'OCC_'+x).join(', ')}</p>${promptBox(s.rev?'1 · 終了フレーム（先に作ります）':'キーフレーム・プロンプト','16:9、スタイル接尾辞を含みます',fillShot(s.img)+STYLE)}${s.end?promptBox(s.rev?'2 · 開始フレーム':'終了フレーム',s.rev?'画像1を添付してから':'承認済みのキーフレームを添付してから',s.end):''}${(s.extra||[]).map(x=>promptBox(x[0],x[1],x[2])).join('')}${promptBox(s.mo2?'モーションプロンプト · クリップA':'モーションプロンプト',s.moLabel||(s.rev?'Frames to Video：画像2を先に、画像1を最後に':(s.end?'Frames to Video：キーフレームを先に、終了フレームを最後に':'Frames to Video：キーフレームを最初のフレームに')),s.mo+(s.mo2?'':' '+(SND[s.id]||'')))}${s.mo2?promptBox('モーションプロンプト · クリップB',s.mo2Label,s.mo2):''}</article>`).join('');
+
+document.getElementById('voTable').innerHTML=VO.map(v=>`<tr><td class="t">${v[0]}</td><td class="t">${v[1]}</td><td>${v[2]}</td><td style="font-family:var(--script)">${esc(v[3])}</td><td>${v[4]}</td><td>${box(v[0],'')}</td></tr>`).join('');
+
+document.getElementById('songList').innerHTML=SONG.map(s=>promptBox(s.tag,s.sub||'Sunoに貼り付け',s.text)).join('');
+document.getElementById('sfxList').innerHTML=SFX.map((x,i)=>{const id='sfx'+i;ids.push(id);return `<li><label><input type="checkbox" id="chk-${id}" data-k="${id}" ${done[id]?'checked':''}><span>${esc(x)}</span></label></li>`}).join('');
+document.getElementById('edlTable').innerHTML=EDL.map(e=>`<tr><td class="t">${e[0]}</td><td>${esc(e[1])}</td><td>${esc(e[2])}</td><td>${esc(e[3])}</td></tr>`).join('');
+
+function prog(){const d=store();const n=ids.filter(i=>d[i]).length;document.getElementById('prog').textContent=n+' / '+ids.length+' 完了';document.getElementById('progbar').style.width=(ids.length?100*n/ids.length:0)+'%'}
+document.addEventListener('change',e=>{const k=e.target.dataset&&e.target.dataset.k;if(!k)return;const d=store();d[k]=e.target.checked;save(d);prog()});
+prog();
+document.addEventListener('click',e=>{const b=e.target.closest('button.copy');if(!b)return;const pre=b.closest('.prompt').querySelector('pre');const txt=pre.textContent;
+ const ok=()=>{b.textContent='コピーしました';b.classList.add('ok');setTimeout(()=>{b.textContent='コピー';b.classList.remove('ok')},1400)};
+ const fallback=()=>{const r=document.createRange();r.selectNodeContents(pre);const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='選択しました';setTimeout(()=>{b.textContent='コピー'},1400)};
+ try{navigator.clipboard.writeText(txt).then(ok,fallback)}catch(err){fallback()}});
+</script>
+
+</body></html>

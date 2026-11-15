@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>flaminGO Mobile『Flag on the Play』制作ガイド | David Martin</title>
+<meta name="description" content="flaminGO Mobile『Flag on the Play』の完全な制作ガイドです。23.5秒のビッグゲーム向けスペックCMで、演出は私が担当し、Google FlowでAIを用いて制作しました。スタジアム、小さな審判、放送用グラフィックパッケージ、ボイス、Sunoによるスポーツスコア、15回のカット編集と納品物までを解説します。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Figtree:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>html{--sans:"Noto Sans JP","Geist","Segoe UI",system-ui,-apple-system,sans-serif}</style>
+<style>
+:root{--pink:#EC3D8C;--plum:#3B1431;--lpink:#F5A3C8;--blush:#FFF4F8;--line:#F3D3E0;--mut:#7A4A63;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:var(--blush);color:var(--plum);font:16.5px/1.65 "Figtree",system-ui,sans-serif}
+.wrap{max-width:880px;margin:0 auto;padding:0 clamp(18px,4vw,40px)}
+header.doc{padding:clamp(36px,6vw,64px) 0 8px}
+.wordmark{font-family:"Fredoka";font-weight:600;font-size:15px;letter-spacing:.34em;color:var(--pink);text-transform:uppercase}
+h1{font-family:"Fredoka";font-weight:600;font-size:clamp(32px,5vw,50px);line-height:1.08;margin:10px 0 8px}
+.sub{font-size:19px;color:var(--mut);margin:0 0 18px}
+.credit{font-size:15px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:12px 0;margin:0 0 8px}
+.specs{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 4px}
+.specs span{background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 13px;font-size:13.5px;font-weight:600}
+.specs b{color:var(--pink)}
+section{padding:clamp(22px,3.6vw,38px) 0 4px}
+.k{font-family:"Fredoka";font-weight:600;font-size:12.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--pink);margin:0 0 6px}
+h2{font-family:"Fredoka";font-weight:600;font-size:clamp(24px,3.4vw,32px);line-height:1.15;margin:0 0 12px}
+h3{font-family:"Fredoka";font-weight:600;font-size:19px;margin:22px 0 6px}
+p{margin:0 0 12px}
+ul,ol{margin:0 0 12px;padding-left:22px}
+li{margin-bottom:6px}
+table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:6px 0 16px;font-size:15px}
+th,td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--line)}
+th{font-family:"Fredoka";font-weight:600;background:#FFF9FB}
+tr:last-child td{border-bottom:none}
+.q{font-style:italic}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:0 0 14px}
+.sw{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0 14px}
+.sw div{flex:1 1 140px;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:13.5px;background:#fff}
+.sw i{display:block;height:34px;border-radius:8px;margin-bottom:8px}
+footer.doc{padding:34px 0 54px;font-size:13.5px;color:var(--mut)}
+.fine{border-top:1px solid var(--line);padding-top:14px}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.92em;background:#fff;border:1px solid var(--line);border-radius:6px;padding:1px 5px}
+</style>
+</head><body>
+<header class="doc"><div class="wrap">
+<p class="wordmark">flaminGO Mobile</p>
+<h1>Flag on the Play：制作ガイド</h1>
+<p class="sub">23.5秒のビッグゲーム向けスペックCMがどう作られたか。満員のスタジアムが保留のまま止まり、フットボールの半分の長さしかないフラミンゴの審判が登場し、本格的な放送用グラフィックパッケージを備えた作品を、Google FlowでAIを用いて最初から最後まで制作しました。</p>
+<p class="credit">コンセプト、演出、制作は私が担当し、AIを用いて制作しました。ロゴは私が提供しました。</p>
+<div class="specs"><span><b>23.5秒</b> 最終カット</span><span><b>1920&times;1080</b> 24 fps</span><span><b>6</b> ショット</span><span><b>15</b> 最終までカット</span><span><b>-16 LUFS</b> ステレオミックス</span></div>
+</div></header>
+
+<section><div class="wrap">
+<p class="k">物語</p>
+<h2>7万人が保留のまま</h2>
+<p>満員の夜のスタジアム。観客も選手も全員、大手キャリアとの通話で保留になったままです。スマートフォンを耳に当て、選手はミッドフィールドで立ち止まり、大型スクリーンには PLEASE HOLD と表示され、保留タイマーは 3:12:47 を示しています。クォーターバックは淡々と言います。<span class="q">&ldquo;まだ&hellip;保留中だ。&rdquo;</span></p>
+<p>そこへホイッスルが鳴ります。審判のシャツを着た Frankie が旗を投げます。<span class="q">&ldquo;プレーにフラッグだ。ホールディング。&rdquo;</span>そのコールは1回目の呼び出しでつながります。<span class="q">&ldquo;おお、Flamingo が出た。&rdquo;</span>スタジアムはピンクに沸き、アナウンサーはオファーを短く決めます。<span class="q">&ldquo;Flamingo はつながります。1回目の呼び出しで。&rdquo;</span>そして Frankie はエンドカードのためボールの上に立ちます。<span class="q">&ldquo;flaminGO Mobile サポートです。&rdquo;</span>ジングルは<span class="q">&ldquo;Let&rsquo;s go, flaminGO!&rdquo;</span>です。</p>
+<p>このスポットの目的は、このキャンペーンが全国規模のビッグゲームでも通用することを示すことです。フォトリアルなスタジアム、壮大なスコア、放送用グラフィックパッケージ。その真ん中で、マスコットは小さなまま、モデルのままです。</p>
+</div></section>
+
+<section><div class="wrap">
+<p class="k">リファレンス</p>
+<h2>1ショット撮る前の、4つのロック</h2>
+<p>最初の2本のスポットと同様、リファレンスが決め手です。ショットのプロンプトでは、添付した各画像が何であるかを名指しし、ショットそのものだけを記述します。Frankie を言葉で再記述することは決してしません。</p>
+<table>
+<tr><th>R1 &middot; Frankie、審判</th><td>ロックされた Frankie のリファレンスへの単一変更の編集で作りました。小さな審判シャツ（黒と白のストライプ）と、黒いコードに付けた銀色のホイッスルを追加します。頭、顔、羽、脚、大きさは変更しません。</td></tr>
+<tr><th>R2 &middot; スタジアム</th><td>架空のスタジアムの広い夜景プレートです。満員のスタンド、投光器のタワー、無地のフィールドマーキング、空白のビデオスクリーン。チームロゴ、リーグロゴ、数字、読める文字はどこにも入れません。完成した映像に映る文字はすべて、編集で配置したグラフィックです。</td></tr>
+<tr><th>R3 &middot; クォーターバック</th><td>Spot 01 の選手です。無地の紺色ジャージを着て、顔が見えるように銀色のヘルメットを後ろにずらしています。後に Flow がクローズショットを著名な人物として拒否したため、編集で顔を変更し、それ以降の選手のショットはすべてその顔を使っています。</td></tr>
+<tr><th>R4 &middot; スケールフレーム</th><td>芝生の高さでフットボールの横に立つ Frankie です。足から頭のてっぺんまで、ボールの長さの約半分しかありません。小さなおもちゃのフィギュアのようです。このフレームは Frankie のすべてのショットに添付し、大きくなったりモデルから外れたりしたフレームは、2つの修正プロンプト（3分の1小さくする、リファレンスに正確に合わせる）で直します。</td></tr>
+</table>
+</div></section>
+
+<section><div class="wrap">
+<p class="k">アニメーション</p>
+<h2>6ショット、各1本の連続テイク</h2>
+<p>すべてのショットは Google Flow で Omni Flash 1.1 を使い、承認済みの開始フレームから生成し、6秒でレンダリングして編集でトリミングしました。モーションプロンプトは動きだけを記述し、その後に同じロックを続けます。Frankie は正確な大きさ、シャツ、プロポーションを保ちます。選手は顔を保ちます。1本の連続した途切れないショットとし、カットは入れません。</p>
+<table>
+<tr><th>S1 &middot; 0.0～2.3秒</th><td>7万人が保留中。スタンドの上をゆっくりと滑空する空中ショット。ほとんど誰も動きません。数人のファンが、かすかな保留音楽の下で身をよじり、ため息をつきます。</td></tr>
+<tr><th>S2 &middot; 2.3～4.7秒</th><td>まだ保留中。クォーターバックがヘルメットにスマートフォンを当て、カメラに向かってセリフを言い、ため息をつきます。最終テイクは後で撮り直したもので、その声自体にセリフに必要な間がありました。&ldquo;まだ&hellip;保留中だ。&rdquo;</td></tr>
+<tr><th>S3 &middot; 4.7～10.3秒</th><td>プレーにフラッグ。ホイッスルが鳴り、黄色い旗が高く投げられ、スローモーションで回転し、コールのために翼を広げます。最後のフレームはペナルティカードの下で0.5秒強止め、HOLDING に画面の時間を確保します。</td></tr>
+<tr><th>S4 &middot; 10.3～12.7秒</th><td>1回目の呼び出し。S2 と同じセットアップです。スマートフォンはまだヘルメットに当てられていますが、サポートカードが顔の横に現れ、実際に人が出ています。このビートの初期バージョン2本は外しました。1本はスマートフォンの画面がピンクに光ることを中心にしたもの、もう1本は Maya の名前を出したもので、このスポットを単独で見る視聴者は Maya が誰か分からないため差し替えました。</td></tr>
+<tr><th>S5 &middot; 12.7～15.0秒</th><td>観客が沸きます。スマートフォンを掲げてピンクに光らせ、紙吹雪のキャノンが発射され、アナウンサーのセリフと対応するキネティックなスーパーの下で、スタンドを速く横切る動きを見せます。</td></tr>
+<tr><th>S6 &middot; 15.0～23.5秒</th><td>審判が結論を出します。Frankie がボールの上に立ち、翼をたたみます。その間、フレームの右側3分の2でエンドカードが組み上がります。ロゴ、&ldquo;No holding.&rdquo;、&ldquo;Let&rsquo;s go, flaminGO!&rdquo;、そして細則です。ショットは目を開いたフレームで終わります。クリップの最後のフレームでは瞬きが始まるため、その前にカットを抜けます。</td></tr>
+</table>
+</div></section>
+
+<section><div class="wrap">
+<p class="k">ボイス</p>
+<h2>シンクは演技のものです</h2>
+<p>Frankie の声は最初の2本のスポットと同じ方法です。Flow の演技を Speechify Voice Changer に通し、Lindsey (F) に変換し、アクセントをオンにします。このカットには1つの教訓が書き込まれています。初期バージョンでは、くちばしに合わせるためにセリフを引き伸ばし、歪んでしまいました。そのため最終版では、引き伸ばしていない読みを使い、少し低くし、スタジアムの空気感（軽いコンプレッション、低中域の温かみ、短いリバーブ）を少し加えて、空間になじませています。</p>
+<p>クォーターバックの2つのセリフはクリップ自体の声です。シンクが正確なため、そのまま残しました。撮り直した&ldquo;まだ&hellip;保留中だ。&rdquo;も含みます。テキスト読み上げによる追加セリフは Speechify の Walter を使います。落ち着いた、温かいカナダ人の読みです。アナウンサーは Julien で、以前のスポットと同じ声です。このスポットのために新しいセリフを収録しました。ホイッスルの後の観客のブーイングは、生成した観客クリップの音声です。Frankie のセリフで急に止めるのではなく、その下に沈め、HOLDING の後にフェードアウトさせます。</p>
+</div></section>
+
+<section><div class="wrap">
+<p class="k">音楽とサウンド</p>
+<h2>ジングルで終わる、壮大なスコア</h2>
+<p>スコアはこのスポットのために書かれた新しい Suno 制作です。104 BPM、ハ長調の壮大なシネマティック・スポーツアンセムです。冒頭は緊張感のある低い弦楽器と時計の刻む音、そこからスタジアムのドラムヒットに入り、フルオーケストラ、金管のファンファーレ、マーチングスネア、合唱のチャント、ストンプとクラップへと広がり、きれいな最終ヒットまで高まります。編集でつなぎ、最終ヒットが既存の歌入りジングルに正確に重なるようにしました。</p>
+<p>サウンドデザインがジョークを運びます。スタジアムの PA に響くかすかな保留音楽は、ホイッスルでぴたりと止まります。旗投げの下にはフィルターをかけた上昇音があり、&ldquo;Holding!&rdquo;でブームが入ります。明るい呼び出し音が1回。紙吹雪キャノンのブームと、S5 クリップからの観客の大歓声。エンドカードの下には拍手。対話には全体を通して軽い部屋の響きを付け、すべての声が同じスタジアムにいるように聞こえるようにしています。</p>
+</div></section>
+
+<section><div class="wrap">
+<p class="k">グラフィックと編集</p>
+<h2>放送のように作った、放送用パッケージ</h2>
+<p>グラフィックは本物の試合用パッケージとしてデザインしました。スポーツ要素には Barlow Condensed を、ブランドには Fredoka と Figtree を使い、独自のアルファトラック、静止画、ソースファイルを持つ別のオーバーレイパッケージとして構築しました。</p>
+<ul>
+<li>PLEASE HOLD のジャンボトロン。スタジアムのスクリーンにトラッキングし、一目で読めるまでバージョンを重ねて拡大しました。</li>
+<li>黄色いペナルティカードです。FLAG ON THE PLAY と表示し、HOLDING の単語に合わせて叩き込むように入れ、ヒットに合わせて短いカメラシェイクを付けます。</li>
+<li>クォーターバックの横にある FIRST RING サポートカード。より詳しいバージョンをいくつか経て、2回簡素化しました。すべてを説明するカードは、試合の速度では何も説明しないからです。</li>
+<li>観客の上のキネティックなスーパー（FLAMINGO PICKS UP. / FIRST RING.）、隅のワードマークバグ、そしてエンドカードの構築です。</li>
+<li>スポット全体を通した1つの色のルールです。ピンクは flaminGO のために取っておきます。大手キャリア側のもの、保留タグ、ジャンボトロン、ペナルティスレートはすべてグレーとスレートです。</li>
+</ul>
+<p>ピクチャーフィニッシュは、6ショットすべてにフィルム調のグレード、ビネット、細かいグレインをかけ、クォーターバックとクロージングショットにはゆっくりしたプッシュインを入れ、ミックスは -16 LUFS です。</p>
+<h3>15カット、簡潔に</h3>
+<ul>
+<li>v1 では6ショットにフルオーバーレイパッケージを組み立てました。v2 では引き伸ばされた Frankie のセリフを直しました。</li>
+<li>v3 では間を置いたクォーターバックの読み、拡大したジャンボトロン、新しいアナウンサー構成を追加しました。</li>
+<li>v4 と v5 では撮り直した選手のショット、新しいクロージングショット、観客のブーイングを取り入れました。</li>
+<li>v6 では Maya のビートを差し替え、サポートカードを簡素化しました。v7 ではさらに簡素化しました。</li>
+<li>v8 から v11 では HOLDING にフリーズフレームを与え、ピンクを flaminGO のために確保し、保留タグに大手キャリアを明示しました。</li>
+<li>v12 から v14 ではスコアバグを取り除き、タグを整理し、クロージングのアナウンサーのセリフを上げました。</li>
+<li>v15、最終カットです。&ldquo;まだ&hellip;保留中だ。&rdquo;の後に0.5秒の無言の凝視を入れ、アナウンサーのスーパーを2行にし、ブーイングをカットアウトせず Frankie の下に流します。</li>
+</ul>
+</div></section>
+
+<section><div class="wrap">
+<p class="k">納品物</p>
+<h2>仕様と納品物</h2>
+<table>
+<tr><th>最終カット</th><td>Flag on the Play、v15。23.5秒、1920&times;1080、24 fps、H.264、ステレオミックス -16 LUFS、トゥルーピーク -1.6 dB です。</td></tr>
+<tr><th>映像</th><td>4つのロックされたリファレンスから、Google Flow で生成した6ショット（Nano Banana Pro の開始フレーム、Omni Flash 1.1 のモーション）です。フィルム調グレード、ビネット、グレインをかけています。</td></tr>
+<tr><th>ボイス</th><td>Frankie は Speechify Voice Changer、Lindsey (F)、アクセントオンです。アナウンサーは Julien です。クォーターバックはクリップ自体の声です。追加収録は Speechify のテキスト読み上げ、Walter です。</td></tr>
+<tr><th>音楽</th><td>Suno による壮大なスポーツスコア、104 BPM。既存の&ldquo;Let&rsquo;s go, flaminGO!&rdquo;ジングルで終わります。</td></tr>
+<tr><th>グラフィック</th><td>放送用オーバーレイパッケージです。ジャンボトロン、ペナルティカード、サポートカード、キネティックなスーパー、隅のバグ、エンドカードを、静止画とソースファイルとともにアルファオーバーレイトラックとして納品します。</td></tr>
+<tr><th>シリーズ</th><td>flaminGO Mobile キャンペーンの Spot 03 です。Big-Carrier Bill (Spot 01) と Hold, Please (Spot 02) に続き、すべて flaminGO のページに掲載しています。</td></tr>
+</table>
+</div></section>
+
+<footer class="doc"><div class="wrap">
+<p class="fine">スペック広告です。flaminGO Mobile は架空のブランドです。表示されるプラン、価格、カバレッジは説明のためのものです。David Martin による flaminGO Mobile『Flag on the Play』の制作ガイドです。</p>
+</div></footer>
+</body>
+</html>

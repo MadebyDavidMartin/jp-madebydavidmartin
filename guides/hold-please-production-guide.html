@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>flaminGO Mobile『Hold, Please』制作ガイド | David Martin</title>
+<meta name="description" content="flaminGO Mobile『Hold, Please』の完全な制作ガイドです。45.7秒のスペックCMで、演出は私が担当しました。最初に Runway で制作し、Google Flow で作り直して仕上げました。ハイブリッドなパイプライン、マスターフレーム、ボイス、保留音楽、グラフィック、編集と納品物までを解説します。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Figtree:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>html{--sans:"Noto Sans JP","Geist","Segoe UI",system-ui,-apple-system,sans-serif}</style>
+<style>
+:root{--pink:#EC3D8C;--plum:#3B1431;--lpink:#F5A3C8;--blush:#FFF4F8;--line:#F3D3E0;--mut:#7A4A63;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:var(--blush);color:var(--plum);font:16.5px/1.65 "Figtree",system-ui,sans-serif}
+.wrap{max-width:880px;margin:0 auto;padding:0 clamp(18px,4vw,40px)}
+header.doc{padding:clamp(36px,6vw,64px) 0 8px}
+.wordmark{font-family:"Fredoka";font-weight:600;font-size:15px;letter-spacing:.34em;color:var(--pink);text-transform:uppercase}
+h1{font-family:"Fredoka";font-weight:600;font-size:clamp(32px,5vw,50px);line-height:1.08;margin:10px 0 8px}
+.sub{font-size:19px;color:var(--mut);margin:0 0 18px}
+.credit{font-size:15px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:12px 0;margin:0 0 8px}
+.specs{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 4px}
+.specs span{background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 13px;font-size:13.5px;font-weight:600}
+.specs b{color:var(--pink)}
+section{padding:clamp(22px,3.6vw,38px) 0 4px}
+.k{font-family:"Fredoka";font-weight:600;font-size:12.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--pink);margin:0 0 6px}
+h2{font-family:"Fredoka";font-weight:600;font-size:clamp(24px,3.4vw,32px);line-height:1.15;margin:0 0 12px}
+h3{font-family:"Fredoka";font-weight:600;font-size:19px;margin:22px 0 6px}
+p{margin:0 0 12px}
+ul,ol{margin:0 0 12px;padding-left:22px}
+li{margin-bottom:6px}
+table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:6px 0 16px;font-size:15px}
+th,td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--line)}
+th{font-family:"Fredoka";font-weight:600;background:#FFF9FB}
+tr:last-child td{border-bottom:none}
+.q{font-style:italic}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:0 0 14px}
+.sw{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0 14px}
+.sw div{flex:1 1 140px;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:13.5px;background:#fff}
+.sw i{display:block;height:34px;border-radius:8px;margin-bottom:8px}
+footer.doc{padding:34px 0 54px;font-size:13.5px;color:var(--mut)}
+.fine{border-top:1px solid var(--line);padding-top:14px}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.92em;background:#fff;border:1px solid var(--line);border-radius:6px;padding:1px 5px}
+</style>
+</head>
+<body>
+<header class="doc"><div class="wrap">
+<p class="wordmark">flaminGO Mobile</p>
+<h1>Hold, Please：制作ガイド</h1>
+<p class="sub">保留にされることを題材にした45.7秒のスペックCMが、最初に Runway で制作され、その後 Google Flow で作り直されて仕上げられるまでを、AIを用いて最初から最後まで解説します。最終カットは両方の制作のハイブリッドであり、このガイドはそれぞれの仕事を記録します。</p>
+<p class="credit">コンセプト、演出、制作は私が担当し、AIを用いて制作しました。ロゴは私が提供しました。</p>
+<div class="specs"><span><b>45.7秒</b> 最終カット</span><span><b>1920&times;1080</b> 24 fps</span><span><b>8</b> ビート</span><span><b>1</b> マスターフレーム</span><span><b>-16 LUFS</b> ステレオミックス</span></div>
+</div></header>
+
+<section><div class="wrap">
+<p class="k">なぜこのスポットは2回作られたのか</p>
+<h2>最初のバージョンは成立しなかった。だから作り直した</h2>
+<p>『Hold, Please』の最初のバージョン（v1 から v4）は Runway の Gen-4.5 で制作されました。4つの点で失敗しました。それを書き留める価値があるのは、作り直しのすべてを決めたからです。</p>
+<ol>
+<li>Frankie がモデルから外れて戻ってきました。細く、ふわふわ感が少なく、目が小さくなっていました。第1スポットの横に置くと、別の鳥のように見えました。</li>
+<li>Frankie が一度も話さなかったため、ナレーターがすべてを説明しなければなりませんでした。第1スポットでは、Frankie 自身がジョークを運びます。</li>
+<li>ジョークがなく、出来事の連続だけでした。</li>
+<li>Maya の声が間違って聞こえました。</li>
+</ol>
+<p>Runway バージョンはスケッチでもテストでもありませんでした。完全な、完成したCMでした。すべてのショットを制作し、Maya をキャスティングして演じさせ、保留音楽を入れ、エンドカードを作りました。この映像が最終的な形で存在する理由です。そしてその最も強い仕事が最終カットにあります。Maya の演技は Runway から出てきたそのままに、映像とリップシンクを変更せずに流れます。すでに正しかったからです。そして保留音楽、ジョーク全体がかかるトラックは、その制作のトラックです。</p>
+<p>Runway がこの映像でできなかったのは、スポット全体を通して Frankie を第1スポットのキャラクターモデルに保つことでした。その規律、つまり生成器に決して覆させない承認済みリファレンスは、第1スポットを作った Flow のパイプラインにあります。そこで作り直し（v2）は、Frankie についてはその方法に戻ります。Google Flow、第1スポット自身のリファレンス、話す Frankie、悪化し続ける1つのコミックな前提、それを回収するボタン、そして同じエンドカードとジングルです。最終版は文字通りのハイブリッドです。Runway の演技と Flow のキャラクターを一緒にカットし、声を付け、スコアを付け、1つの作品として仕上げました。その制作の最も強い部分は、意図して、そのまま作り直しに持ち込みました。</p>
+<table>
+<tr><th>残したもの</th><th>理由</th></tr>
+<tr><td>Maya の2ショット、映像とリップシンク</td><td>彼女の演技はすでに正しかったからです。間違っていたのは声だけで、声は映像に触れずに差し替えられます。</td></tr>
+<tr><td>保留音楽</td><td>両バージョンでジョークの原材料だったからです。</td></tr>
+</table>
+<p>v1 のナレーターのセリフは外しました。第1スポットにナレーターはおらず、このスポットにもいません。Frankie 自身が物語を語ります。</p>
+</div></section>
+
+<section><div class="wrap">
+<p class="k">物語</p>
+<h2>3時間の保留、解決は1回の呼び出し</h2>
+<p>Frankie は大手キャリアとの通話で保留になり、ばかばかしくなるほど長く待っています。片脚で眠り、足からコーヒーマグへクモの巣が伸びています。ついに電話を切り、flaminGO にかけると、本物の人がすぐに応答し、1文ですべてを片付けます。ひねりは、そのすべてを経た後で、彼が保留音楽を恋しく思うことです。</p>
+<table>
+<tr><th>ビート</th><th>ショット</th><th>サウンド、対話、グラフィック</th></tr>
+<tr><td>1</td><td>F1。スピーカーにしたスマートフォンの横で片脚で立つ Frankie。レンズを平坦に見つめます。</td><td>かすかな保留音楽。ロボット：<span class="q">&ldquo;お客様の電話は大切に扱われています。&rdquo;</span> Frankie、無表情に：<span class="q">&ldquo;本当に？&rdquo;</span>保留ピル：ON HOLD 47:12、カウント中。</td></tr>
+<tr><td>2</td><td>F2。同じフレーミング、後になって。立ったまま眠る Frankie、足からマグへクモの巣。はっとして目を覚まします。</td><td>保留音楽、小さないびき、再びロボット。ピルは 3:12:47 にジャンプします。</td></tr>
+<tr><td>3</td><td>F3。Frankie がスマートフォンをつつきます。切って、ダイヤル。</td><td>くちばしのタップはグラフィックで&ldquo;tap!&rdquo;と表示され、切断音、呼び出し音1回。保留音楽はぴたりと止まります。&ldquo;Calling flaminGO&rdquo;がスマートフォンの画面に固定されます。</td></tr>
+<tr><td>4</td><td>Maya、残したショット。彼女が応答します。</td><td>Maya：<span class="q">&ldquo;flaminGO サポートです。どうお手伝いできますか？&rdquo;</span>音楽ベッドは応答と同時に始まります。カウンターが呼び出し回数を示します。1回。スタンプが入ります。NO HOLD。</td></tr>
+<tr><td>5</td><td>F4。驚いた Frankie、よろめき、バランスを取るために羽ばたきます。</td><td>Frankie：<span class="q">&ldquo;待って&hellip;人？！&rdquo;</span></td></tr>
+<tr><td>6</td><td>Maya、残したショット。</td><td>Maya：<span class="q">&ldquo;プランは1つ、価格は1つ、完了です。&rdquo;</span>3つのスーパーが1つずつ入ります。$25 の価格バッジは最後の言葉で入ります。</td></tr>
+<tr><td>7</td><td>F5。Frankie がスマートフォンに身を寄せ、恥ずかしそうにします。</td><td>Frankie：<span class="q">&ldquo;ねえ、Maya？やっぱり保留にしてもらえる？あの音楽がちょっと恋しくて。&rdquo;</span> Maya が笑います。かすかな保留音楽が戻り、彼は目を閉じて体を揺らします。新しいピルの下で：ON HOLD 0:00, BY REQUEST。</td></tr>
+<tr><td>8</td><td>エンドカード。Frankie はロゴの横でまだ体を揺らしています。</td><td>アナウンサー：<span class="q">&ldquo;Flamingo Mobile.&rdquo;</span>カードはキャンペーンライン&ldquo;Skip the hold.&rdquo;を組み上げ、次にジングル：<span class="q">&ldquo;Let&rsquo;s go, flaminGO!&rdquo;</span>細則はカード全体を通して画面に表示されます。</td></tr>
+</table>
+<p>Frankie は3セリフ。Maya は2セリフ。ロボットは1セリフを2回使用。アナウンサーは1セリフ。このスポットの主張全体は、5つの短いスピーチと1つのタイマーで運ばれます。</p>
+</div></section>
+
+<section><div class="wrap">
+<p class="k">マスターフレーム</p>
+<h2>まず F1 を作る。すべてはそこから作られる</h2>
+<p>Frankie のフレームは Google Flow で Nano Banana Pro を使い、2K、16:9 で作りました。第1スポット自身のリファレンスを添付します。R3（サイズリファレンス）と R6（キッチン）、そしてアイデンティティチェックとして R1（全身のキャラクターロック）です。第1スポットのルールはそのまま適用されます。リファレンスが常に勝ち、プロンプトは Frankie を言葉で再記述しません。</p>
+<div class="card">
+<p style="margin:0"><b>F1 プロンプト全文：</b> <span class="q">&ldquo;Use the attached images as exact references and do not redesign anything in them: the size reference photo is Frankie at his exact size (use it for his look and size only) and the room photo is the kitchen. Close shot at tabletop height on the white oak table, the window on the left. Frankie, exactly as in the size reference photo, same head, face and proportions, stands on one leg in the centre of the frame. On his left a modern smartphone in a matte charcoal case lies face up on the table, its screen showing only a plain, soft white glow. A plain white coffee mug stands on his right. He stares flatly straight into the camera with heavy, half-closed eyelids and a deadpan, unimpressed expression, wings folded, like someone who has been waiting a very long time. Locked-off camera with clear empty space in the upper left of the frame. Frankie is tiny, the size of a small toy figurine: from his feet to the top of his head he is no taller than the coffee mug. Style: a modern national TV commercial. The room and any person in it are photorealistic live action, like real film footage, never animated. Frankie is the animated character from the attached reference, unchanged in look, composited in with matching light and a soft contact shadow under his foot. Exactly one Frankie, with two wings and two legs. Cinema camera, 35mm lens, bright natural morning daylight from the window on the left, gentle shallow depth of field, clean modern colour grade. Full-frame 16:9 image. No text, no logos, no watermarks.&rdquo;</span></p>
+</div>
+<p>何かを作る前に3つのチェックをします。Frankie が R3 と一致すること（ふわふわで、大きな丸い頭、大きな茶色の目、細い第1バージョンの Frankie ではないこと）。スマートフォンの画面が無地で、アイコンや文字がないこと。そして大きさが、第1スポットでマグに対して置かれた位置にあること。最後のチェックに関する制作メモです。プロンプトではマグより背が高くない鳥を求めていますが、合格したフレームは少し背が高く、R3 自体が彼を置く位置にあります。プロンプトの文言よりもリファレンスとの一貫性が勝ちました。それが、設計通りにシステムが働いているということです。</p>
+<h3>F2、F4、F5 は新しいフレームではなく、編集です</h3>
+<p>残りの Frankie フレームはそれぞれ、F1 だけを添付し、1つだけを変更して作りました。</p>
+<ul>
+<li><b>F2、眠っている状態：</b>目を閉じ、頭を低く垂れ、体を崩し、足からマグの取っ手へ細いクモの巣を張ります。</li>
+<li><b>F4、驚いた状態：</b>スマートフォンに向かって身を乗り出し、目を見開き、くちばしを開き、両翼を持ち上げます。</li>
+<li><b>F5、恥ずかしそうな状態：</b>スマートフォンの近くまで身をかがめ、希望に満ちた小さな笑顔を見せ、片方の翼の先を恥ずかしそうに胸に当てます。</li>
+</ul>
+<p>この方法で生じる失敗をカバーする修正プロンプトは2つで、他には何も必要ありませんでした。</p>
+<ul>
+<li><b>大きすぎる場合：</b> <span class="q">&ldquo;Edit this image. Only change: make the flamingo one third smaller, keeping his foot on exactly the same spot, his pose and his look unchanged, and fill the space he no longer covers with the matching background. Nothing else changes.&rdquo;</span></li>
+<li><b>モデルから外れた場合</b>（フレームと R3 を添付）：</li> <span class="q">&ldquo;Edit this image. Only change: make the flamingo match the attached reference exactly, with the same head size, eyes, beak, feathers and proportions, at the same small size, pose and position. Nothing else changes.&rdquo;</span></li>
+</ul>
+</div></section>
+
+<section><div class="wrap">
+<p class="k">アニメーション</p>
+<h2>5クリップ、固定された1台のカメラ</h2>
+<p>4つの Frankie フレーム（F1 を2回使用）を Google Flow で Omni Flash 1.1 を使い、フレームから動画へアニメーション化しました。すべてのモーションプロンプトは動きと対話だけを記述し、同じロックで終わります。Frankie は正確な大きさ、形、羽の色、プロポーション、2つの翼と2つの脚を保ちます。スマートフォンは形と無地の白い画面の光を保ちます。1本の連続した途切れないショットとし、カットは入れません。</p>
+<p>どのクリップでもカメラは動きません。それはスタイルではなくグラフィックの判断です。保留タイマー、&ldquo;Calling flaminGO&rdquo;の画面グラフィック、タップマークはすべて、編集で固定位置に留める必要がありました。カメラが動けば、すべてのオーバーレイがトラッキング作業になっていたでしょう。</p>
+<p>すべてのテイクに適用したクリップチェックです。5クリップすべてで同じ Frankie が、マグの横で同じ大きさであること。くちばしが言葉に合わせて動き、セリフが一言一句正しいこと。余分な翼や脚がないこと。スマートフォンに文字が現れないこと。クリップごとに最大3回まで試し、それでだめならサイコロではなくプロンプトを書き直します。</p>
+</div></section>
+
+<section><div class="wrap">
+<p class="k">ボイス</p>
+<h2>演技は残し、声だけを変える</h2>
+<p>第1スポットと同じパイプラインです。生成したクリップの対話の演技はすでにタイミングが合っていたため、セリフを抽出し、Speechify Studio Voice Changer に通し、元のタイムスタンプに戻しました。そのためリップシンクは決して動きません。</p>
+<ul>
+<li><b>Frankie：</b>Lindsey (F)、アクセントオン、第1スポットと同じ声です。スポットをまたいだ継続性はキャスティングの判断です。</li>
+<li><b>Maya：</b>彼女の2ショットは v1 から残し、映像とリップシンクには手を付けず、音声だけを差し替えました。温かく自然な女性の声を2、3試し、プレゼンターではなく本物のサポート担当者のように聞こえるものを残しました。</li>
+<li><b>ロボット：</b>Speechify のテキスト読み上げ。通常の速度で、平坦な自動電話システムの声です。セリフを3回収録し、編集で電話の処理を加えました。ロボットはロボットらしく聞こえるべきです。</li>
+<li><b>アナウンサー：</b>Julien、&ldquo;Flamingo Mobile.&rdquo;、第1スポットのエンドカードと同じ収録ファミリーです。</li>
+</ul>
+</div></section>
+
+<section><div class="wrap">
+<p class="k">音楽とサウンド</p>
+<h2>保留音楽はキャストの一員です</h2>
+<p>このスポットのために新しく作曲したものはありません。Suno のトロピカルポップのベッドと、歌入りの&ldquo;Let&rsquo;s go, flaminGO!&rdquo;ジングルは第1スポットのもので、2本の映像が1つのキャンペーンのように聞こえるよう再利用しました。ベッドは Maya が応答した瞬間に正確に始まり、Frankie のお願いでは抜け、そのまま出たままになります。</p>
+<p>保留音楽は例外で、2つの状態を持つサウンドデザイン要素として扱います。スマートフォンのスピーカーを通した、かすかで小さな音で、最初の3ビートと体を揺らす場面の下で。そして、Frankie が目を閉じるボタンの最初の瞬間にはフルで。108秒の完全なトラックで、映像が使う量をはるかに超えています。完全なトラックは flaminGO のページ自体でも再生でき、&ldquo;Put me on hold&rdquo;と表示されたボタンの後ろにあります。それが公平というものでしょう。</p>
+</div></section>
+
+<section><div class="wrap">
+<p class="k">グラフィックと編集</p>
+<h2>タイマーが第1幕のすべてです</h2>
+<p>オーバーレイパッケージは第1スポットのシステム（白いピル、プラム色の文字、Fredoka、Frankie や顔やスマートフォンの画面を決して覆わない）を拡張し、コールセンターのセットを加えます。左上の保留タイマーピルは 47:12 から始まってカウントします。3:12:47 へのジャンプカットは、1つの数字で3時間を語ります。スマートフォンから漂う音符。ロボットのセリフのキャプション。Frankie が画面をつつくときの&ldquo;tap!&rdquo;マーク。スマートフォンに固定された&ldquo;Calling flaminGO&rdquo;。ON HOLD 0:00 と RING 1 と表示される接続ピル。Maya のネームタグ。NO HOLD スタンプ。3つのスーパーと $25 の価格バッジ。&ldquo;A real person?!&rdquo;スタンプ。そしてボタンのために、ジョークを公式にするピルです。ON HOLD 0:00, BY REQUEST。</p>
+<p>エンドカードはロゴの構築の下にキャンペーンライン&ldquo;Skip the hold.&rdquo;を加えます。Frankie はフレームの横でまだ体を揺らしています。細則はカード全体を通して表示し、約7秒間です。制作が自ら設定した最低1.6秒を大きく超えています。</p>
+<h3>最終チェック、納品カットで実施したもの</h3>
+<ul>
+<li>Frankie はすべてのショットで第1スポットの Frankie です。</li>
+<li>各ジョークが順番に決まります。&ldquo;本当に？&rdquo;、タイマーのジャンプとクモの巣、&ldquo;人？！&rdquo;、&ldquo;音楽が恋しい&rdquo;。</li>
+<li>上映時間は45.7秒です。計画では約30秒を目標にしていましたが、お願いによる体揺らしとエンドカードがカットの中で追加の長さに値し、そのまま残しました。</li>
+<li>ミックスは -16 LUFS インテグレーテッド（測定値 -16.06）、トゥルーピーク -2.85 dB です。</li>
+<li>emダッシュは使っていません。本物のキャリア名はなく、細則はフルスクリーンで読めます。</li>
+</ul>
+</div></section>
+
+<section><div class="wrap">
+<p class="k">納品物</p>
+<h2>仕様と納品物</h2>
+<table>
+<tr><th>最終カット</th><td>&ldquo;Hold, Please&rdquo;、45.7秒、1920&times;1080、24 fps、H.264、AAC 音声</td></tr>
+<tr><th>マスター</th><td>26.2 MB、4.6 Mbps。Web エンコードは 10.3 MB、1.8 Mbps です。</td></tr>
+<tr><th>Runway</th><td>このスポットは最初に Runway の Gen-4.5 で、完全なCMとして最初から最後まで制作されました（v1 から v4）。その制作が最終カットの土台であり、第1節でその経緯を語ります。</td></tr>
+<tr><th>フレーム</th><td>Google Flow の Nano Banana Pro、2K、16:9。マスターフレーム1つ、単一変更の編集3つ、Runway バージョンから残した2ショットです。</td></tr>
+<tr><th>モーション</th><td>Google Flow の Omni Flash 1.1、フレームから動画へ、テイクごとに1本の連続ショットです。</td></tr>
+<tr><th>ボイス</th><td>Speechify Studio Voice Changer（Frankie、Maya）と Speechify のテキスト読み上げ（ロボット）。元のタイムスタンプで差し替えました。</td></tr>
+<tr><th>音楽</th><td>Suno のベッドとジングルは第1スポットから再利用。保留音楽は提供されたものを、2つの処理で使います。</td></tr>
+<tr><th>グラフィック</th><td>保留タイマー、呼び出しカウンター、画面グラフィック、スタンプ、スーパー、価格バッジ、隅のバグ、エンドカード。編集でオーバーレイとして構築しました。</td></tr>
+<tr><th>演出</th><td>コンセプト、演出、制作は私が担当し、AIを用いて制作しました。ロゴは私が提供しました。</td></tr>
+</table>
+</div></section>
+
+<footer class="doc"><div class="wrap">
+<p class="fine">flaminGO Mobile『Hold, Please』。スペックCMです。コンセプト、演出、制作は私が担当し、AIを用いて制作しました。ロゴは私が提供しました。flaminGO Mobile『Big-Carrier Bill』、SOLENTEI 369『First Light』、『Occupied』、ORIVEX ARC-7、Fizzy Pop 2026 の制作ガイドの姉妹編です。</p>
+</div></footer>
+</body>
+</html>
